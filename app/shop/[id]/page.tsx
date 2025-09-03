@@ -4,9 +4,11 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { ArrowLeft, Heart, Share2, Minus, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { Footer } from "@/components/footer";
+import { useCart } from "@/lib/cart-context";
 
 interface Product {
-  id: number;
+  _id: string;
   name: string;
   description: string;
   price: number;
@@ -28,6 +30,7 @@ export default function ProductDetailPage({
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
   const [productId, setProductId] = useState<string>("");
+  const { addToCart } = useCart();
   const router = useRouter();
 
   useEffect(() => {
@@ -60,6 +63,11 @@ export default function ProductDetailPage({
 
     fetchProduct();
   }, [productId, router]);
+
+  const handleAddToCart = async () => {
+    if (!product) return;
+    await addToCart(product._id, quantity);
+  };
 
   if (loading) {
     return (
@@ -221,7 +229,10 @@ export default function ProductDetailPage({
 
             {/* Add to Cart */}
             <div className="space-y-4">
-              <button className="w-full px-8 py-4 bg-black text-white hover:bg-black/90 transition-all duration-500 text-sm tracking-[0.2em] uppercase font-light">
+              <button
+                onClick={handleAddToCart}
+                className="w-full px-8 py-4 bg-black text-white hover:bg-black/90 transition-all duration-500 text-sm tracking-[0.2em] uppercase font-light"
+              >
                 Add to Cart
               </button>
 
@@ -247,7 +258,7 @@ export default function ProductDetailPage({
                 </div>
                 <div className="flex justify-between">
                   <span>SKU:</span>
-                  <span>LUXE-{product.id.toString().padStart(3, "0")}</span>
+                  <span>LUXE-{product._id.toString().padStart(3, "0")}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Availability:</span>
@@ -287,6 +298,7 @@ export default function ProductDetailPage({
           </div>
         </div>
       </section>
+      <Footer />
     </div>
   );
 }

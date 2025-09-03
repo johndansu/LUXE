@@ -2,26 +2,21 @@
 
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
-import { ShoppingBag, User, LogOut, Heart } from "lucide-react";
+import { ShoppingBag, User, LogOut, Menu, X } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useCart } from "@/lib/cart-context";
-import { useWishlist } from "@/lib/wishlist-context";
 
-export function MinimalNav() {
+export function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const [user, setUser] = useState<any>(null);
-  const { cartCount } = useCart();
-  const { wishlistItems } = useWishlist();
+  const [cartCount, setCartCount] = useState(0);
   const router = useRouter();
 
   const navItems = [
     { name: "Home", href: "/" },
     { name: "Shop", href: "/shop" },
-    { name: "Wishlist", href: "/wishlist" },
+    { name: "Products", href: "/products" },
     { name: "About", href: "/#about" },
-    { name: "Collection", href: "/#collection" },
-    { name: "Lookbook", href: "/#lookbook" },
     { name: "Contact", href: "/#contact" },
   ];
 
@@ -38,7 +33,19 @@ export function MinimalNav() {
         // User not logged in
       });
 
-    // Cart count is now managed by the cart context
+    // Fetch cart count
+    fetch("/api/cart")
+      .then((res) => res.json())
+      .then((items) => {
+        const total = items.reduce(
+          (sum: number, item: any) => sum + item.quantity,
+          0
+        );
+        setCartCount(total);
+      })
+      .catch(() => {
+        // Cart empty or error
+      });
   }, []);
 
   const handleLogout = async () => {
@@ -72,7 +79,7 @@ export function MinimalNav() {
 
           {/* Desktop Navigation */}
           <motion.div
-            className="hidden md:flex items-center space-x-12"
+            className="hidden md:flex items-center space-x-8"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
@@ -90,70 +97,32 @@ export function MinimalNav() {
                 <div className="absolute bottom-0 left-0 w-0 h-px bg-black group-hover:w-full transition-all duration-300"></div>
               </motion.a>
             ))}
-
-            {/* Wishlist Icon (only for logged-in users) */}
-            {user && (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{
-                  duration: 0.4,
-                  delay: 0.3 + navItems.length * 0.1,
-                }}
-              >
-                <Link
-                  href="/wishlist"
-                  className="text-black/70 hover:text-black transition-colors duration-300 relative group"
-                >
-                  <Heart className="w-5 h-5" />
-                  {wishlistItems.length > 0 && (
-                    <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                      {wishlistItems.length}
-                    </span>
-                  )}
-                  <div className="absolute bottom-0 left-0 w-0 h-px bg-black group-hover:w-full transition-all duration-300"></div>
-                </Link>
-              </motion.div>
-            )}
-
-            {/* Cart Icon */}
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{
-                duration: 0.4,
-                delay: 0.3 + navItems.length * 0.1 + (user ? 0.1 : 0),
-              }}
-            >
-              <Link
-                href="/cart"
-                className="text-black/70 hover:text-black transition-colors duration-300 relative group"
-              >
-                <ShoppingBag className="w-5 h-5" />
-                {cartCount > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-black text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                    {cartCount}
-                  </span>
-                )}
-                <div className="absolute bottom-0 left-0 w-0 h-px bg-black group-hover:w-full transition-all duration-300"></div>
-              </Link>
-            </motion.div>
           </motion.div>
 
-          {/* Right side - Auth or Shop */}
+          {/* Right side icons */}
           <motion.div
             className="flex items-center space-x-4"
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
           >
+            {/* Cart Icon */}
+            <Link
+              href="/cart"
+              className="text-black/70 hover:text-black transition-colors duration-300 relative group"
+            >
+              <ShoppingBag className="w-5 h-5" />
+              {cartCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-black text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  {cartCount}
+                </span>
+              )}
+              <div className="absolute bottom-0 left-0 w-0 h-px bg-black group-hover:w-full transition-all duration-300"></div>
+            </Link>
+
+            {/* User Authentication */}
             {user ? (
-              // User is logged in - show account and logout
-              <>
-                <div className="flex items-center space-x-1 text-xs text-black/50">
-                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                  <span className="hidden sm:inline">Logged in</span>
-                </div>
+              <div className="flex items-center space-x-2">
                 <Link
                   href="/account"
                   className="text-black/70 hover:text-black transition-colors duration-300 relative group"
@@ -168,10 +137,9 @@ export function MinimalNav() {
                   <LogOut className="w-5 h-5" />
                   <div className="absolute bottom-0 left-0 w-0 h-px bg-black group-hover:w-full transition-all duration-300"></div>
                 </button>
-              </>
+              </div>
             ) : (
-              // User not logged in - show login/signup
-              <>
+              <div className="flex items-center space-x-2">
                 <Link
                   href="/login"
                   className="text-black/70 hover:text-black transition-colors duration-300 text-sm tracking-[0.15em] uppercase relative group"
@@ -181,49 +149,37 @@ export function MinimalNav() {
                 </Link>
                 <Link
                   href="/signup"
-                  className="px-6 py-2 bg-black text-white hover:bg-black/80 transition-all duration-300 text-sm tracking-[0.15em] uppercase"
+                  className="px-4 py-2 bg-black text-white hover:bg-black/80 transition-all duration-300 text-sm tracking-[0.15em] uppercase"
                 >
                   Sign Up
                 </Link>
-              </>
+              </div>
             )}
-          </motion.div>
 
-          {/* Mobile Menu Button */}
-          <motion.button
-            className="md:hidden text-black/70 hover:text-black transition-colors duration-300"
-            onClick={() => setIsOpen(!isOpen)}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.5 }}
-          >
-            <div className="w-6 h-6 flex flex-col justify-center items-center">
-              <div
-                className={`w-5 h-px bg-current transition-all duration-300 ${
-                  isOpen ? "rotate-45 translate-y-1" : ""
-                }`}
-              ></div>
-              <div
-                className={`w-5 h-px bg-current mt-1 transition-all duration-300 ${
-                  isOpen ? "opacity-0" : ""
-                }`}
-              ></div>
-              <div
-                className={`w-5 h-px bg-current mt-1 transition-all duration-300 ${
-                  isOpen ? "-rotate-45 -translate-y-1" : ""
-                }`}
-              ></div>
-            </div>
-          </motion.button>
+            {/* Mobile Menu Button */}
+            <motion.button
+              className="md:hidden text-black/70 hover:text-black transition-colors duration-300"
+              onClick={() => setIsOpen(!isOpen)}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.6, delay: 0.5 }}
+            >
+              {isOpen ? (
+                <X className="w-6 h-6" />
+              ) : (
+                <Menu className="w-6 h-6" />
+              )}
+            </motion.button>
+          </motion.div>
         </div>
 
         {/* Mobile Menu */}
         <motion.div
           className={`md:hidden overflow-hidden transition-all duration-300 ${
-            isOpen ? "max-h-64" : "max-h-0"
+            isOpen ? "max-h-96" : "max-h-0"
           }`}
           initial={{ maxHeight: 0 }}
-          animate={{ maxHeight: isOpen ? 256 : 0 }}
+          animate={{ maxHeight: isOpen ? 384 : 0 }}
           transition={{ duration: 0.3 }}
         >
           <div className="py-4 space-y-4">
@@ -235,70 +191,49 @@ export function MinimalNav() {
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: isOpen ? 1 : 0, x: isOpen ? 0 : -20 }}
                 transition={{ duration: 0.3, delay: index * 0.1 }}
+                onClick={() => setIsOpen(false)}
               >
                 {item.name}
               </motion.a>
             ))}
+
             {/* Mobile Auth */}
             <div className="pt-4 border-t border-black/10">
               {user ? (
                 <div className="space-y-2">
-                  <motion.a
-                    href="/wishlist"
-                    className="block text-black/70 hover:text-black transition-colors duration-300 text-sm tracking-[0.15em] uppercase py-2"
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: isOpen ? 1 : 0, x: isOpen ? 0 : -20 }}
-                    transition={{ duration: 0.3, delay: 0.4 }}
-                    onClick={() => setIsOpen(false)}
-                  >
-                    Wishlist{" "}
-                    {wishlistItems.length > 0 && `(${wishlistItems.length})`}
-                  </motion.a>
-                  <motion.a
+                  <Link
                     href="/account"
                     className="block text-black/70 hover:text-black transition-colors duration-300 text-sm tracking-[0.15em] uppercase py-2"
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: isOpen ? 1 : 0, x: isOpen ? 0 : -20 }}
-                    transition={{ duration: 0.3, delay: 0.5 }}
                     onClick={() => setIsOpen(false)}
                   >
                     Account
-                  </motion.a>
-                  <motion.button
+                  </Link>
+                  <button
                     onClick={() => {
                       handleLogout();
                       setIsOpen(false);
                     }}
                     className="block text-black/70 hover:text-black transition-colors duration-300 text-sm tracking-[0.15em] uppercase py-2"
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: isOpen ? 1 : 0, x: isOpen ? 0 : -20 }}
-                    transition={{ duration: 0.3, delay: 0.5 }}
                   >
                     Logout
-                  </motion.button>
+                  </button>
                 </div>
               ) : (
                 <div className="space-y-2">
-                  <motion.a
+                  <Link
                     href="/login"
                     className="block text-black/70 hover:text-black transition-colors duration-300 text-sm tracking-[0.15em] uppercase py-2"
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: isOpen ? 1 : 0, x: isOpen ? 0 : -20 }}
-                    transition={{ duration: 0.3, delay: 0.4 }}
                     onClick={() => setIsOpen(false)}
                   >
                     Login
-                  </motion.a>
-                  <motion.a
+                  </Link>
+                  <Link
                     href="/signup"
                     className="block px-4 py-2 bg-black text-white hover:bg-black/80 transition-all duration-300 text-sm tracking-[0.15em] uppercase text-center"
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: isOpen ? 1 : 0, x: isOpen ? 0 : -20 }}
-                    transition={{ duration: 0.3, delay: 0.5 }}
                     onClick={() => setIsOpen(false)}
                   >
                     Sign Up
-                  </motion.a>
+                  </Link>
                 </div>
               )}
             </div>

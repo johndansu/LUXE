@@ -1,25 +1,14 @@
 import { NextResponse } from "next/server";
 import { createUser, setUserSession } from "@/lib/auth";
+import { signupSchema, validateData } from "@/lib/validation";
 
 export async function POST(request: Request) {
   try {
-    const { email, password, firstName, lastName, phone } =
-      await request.json();
+    const body = await request.json();
 
-    // Basic validation
-    if (!email || !password || !firstName || !lastName) {
-      return NextResponse.json(
-        { error: "Missing required fields" },
-        { status: 400 }
-      );
-    }
-
-    if (password.length < 6) {
-      return NextResponse.json(
-        { error: "Password must be at least 6 characters" },
-        { status: 400 }
-      );
-    }
+    // Validate input data
+    const validatedData = validateData(signupSchema, body);
+    const { email, password, firstName, lastName, phone } = validatedData;
 
     const user = await createUser({
       email,
@@ -37,17 +26,25 @@ export async function POST(request: Request) {
     }
 
     // Set session
-    await setUserSession(user.id);
+    await setUserSession(user._id);
 
     return NextResponse.json({ user });
   } catch (error) {
     console.error("Signup error:", error);
-    if (error instanceof Error && error.message === "User already exists") {
-      return NextResponse.json(
-        { error: "User already exists" },
-        { status: 409 }
-      );
+
+    if (error instanceof Error) {
+      if (error.message === "User already exists") {
+        return NextResponse.json(
+          { error: "User already exists" },
+          { status: 409 }
+        );
+      }
+
+      if (error.message.startsWith("Validation failed:")) {
+        return NextResponse.json({ error: error.message }, { status: 400 });
+      }
     }
+
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

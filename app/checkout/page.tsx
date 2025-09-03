@@ -6,14 +6,14 @@ import { ArrowLeft, CreditCard, Lock } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 interface CartItem {
-  id: number;
+  _id: string;
   session_id: string;
-  product_id: number;
+  product_id: string;
   quantity: number;
   created_at: string;
   updated_at: string;
   product?: {
-    id: number;
+    _id: string;
     name: string;
     description: string;
     price: number;
@@ -316,7 +316,7 @@ export default function CheckoutPage() {
               {/* Order Items */}
               <div className="space-y-4 mb-6">
                 {cartItems.map((item) => (
-                  <div key={item.id} className="flex gap-4">
+                  <div key={item._id} className="flex gap-4">
                     <div className="w-16 h-20 bg-black/5 overflow-hidden flex-shrink-0">
                       <img
                         src={item.product?.image_url}

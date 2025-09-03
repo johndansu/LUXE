@@ -4,11 +4,13 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import type { Product } from "@/lib/db";
 import Image from "next/image";
+import { useCart } from "@/lib/cart-context";
 
 export function CollectionSection() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const { addToCart } = useCart();
 
   const categories = [
     "All",
@@ -111,7 +113,7 @@ export function CollectionSection() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-16">
           {filteredProducts.map((product, index) => (
             <motion.div
-              key={product.id}
+              key={product._id}
               className="group"
               initial={{ opacity: 0, y: 50 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -149,6 +151,7 @@ export function CollectionSection() {
 
               {/* Add to Cart Button */}
               <motion.button
+                onClick={() => addToCart(product._id)}
                 className="w-full mt-6 px-6 py-3 border border-black/20 text-black hover:border-black/40 transition-all duration-500 overflow-hidden group/btn relative"
                 whileHover={{ scale: 1.02 }}
                 transition={{ duration: 0.3 }}

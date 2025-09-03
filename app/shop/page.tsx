@@ -3,9 +3,11 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, Grid, List, Filter } from "lucide-react";
+import { Footer } from "@/components/footer";
+import { useCart } from "@/lib/cart-context";
 
 interface Product {
-  id: number;
+  _id: string;
   name: string;
   description: string;
   price: number;
@@ -25,6 +27,7 @@ export default function ShopPage() {
   const [sortBy, setSortBy] = useState("featured");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [showFilters, setShowFilters] = useState(false);
+  const { addToCart } = useCart();
 
   const categories = [
     "All",
@@ -85,7 +88,7 @@ export default function ShopPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-white pt-32">
+      <div className="min-h-screen bg-white">
         <div className="container mx-auto px-4">
           <div className="animate-pulse">
             <div className="h-8 bg-black/10 w-64 mb-8"></div>
@@ -101,12 +104,13 @@ export default function ShopPage() {
             </div>
           </div>
         </div>
+        <Footer />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-white pt-32">
+    <div className="min-h-screen bg-white">
       {/* Hero Section */}
       <section className="py-20 px-4 bg-white relative overflow-hidden">
         {/* Background Elements */}
@@ -223,7 +227,7 @@ export default function ShopPage() {
             <AnimatePresence mode="wait">
               {filteredProducts.map((product, index) => (
                 <motion.div
-                  key={product.id}
+                  key={product._id}
                   layout
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -232,7 +236,7 @@ export default function ShopPage() {
                   className={`group ${viewMode === "list" ? "flex gap-6" : ""}`}
                 >
                   <a
-                    href={`/shop/${product.id}`}
+                    href={`/shop/${product._id}`}
                     className={`${
                       viewMode === "list" ? "w-48 flex-shrink-0" : "w-full"
                     } aspect-[3/4] bg-black/5 overflow-hidden block`}
@@ -250,7 +254,7 @@ export default function ShopPage() {
                     } space-y-2`}
                   >
                     <a
-                      href={`/shop/${product.id}`}
+                      href={`/shop/${product._id}`}
                       className="text-lg font-light tracking-wide text-black group-hover:text-black/70 transition-colors duration-300 hover:underline"
                     >
                       {product.name}
@@ -263,10 +267,7 @@ export default function ShopPage() {
                         ${product.price.toFixed(2)}
                       </span>
                       <button
-                        onClick={() => {
-                          // Add to cart functionality would go here
-                          console.log("Add to cart:", product.id);
-                        }}
+                        onClick={() => addToCart(product._id)}
                         className="px-6 py-2 border border-black/20 text-black hover:border-black/40 hover:bg-black hover:text-white transition-all duration-300 text-sm tracking-[0.1em] uppercase"
                       >
                         Add to Cart
@@ -320,6 +321,7 @@ export default function ShopPage() {
           </motion.div>
         </div>
       </section>
+      <Footer />
     </div>
   );
 }

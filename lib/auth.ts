@@ -1,7 +1,12 @@
 import { cookies } from "next/headers";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import connectDB from "./mongodb";
+import { User, UserAddress, IUser, IUserAddress } from "./schemas";
+import mongoose from "mongoose";
 
 export interface User {
-  id: number;
+  _id: string;
   email: string;
   first_name: string;
   last_name: string;
@@ -11,8 +16,8 @@ export interface User {
 }
 
 export interface UserAddress {
-  id: number;
-  user_id: number;
+  _id: string;
+  user_id: string;
   type: "shipping" | "billing";
   first_name: string;
   last_name: string;
@@ -28,19 +33,36 @@ export interface UserAddress {
   updated_at: string;
 }
 
-// Mock users database - replace with real database integration
-const mockUsers: User[] = [];
-const mockAddresses: UserAddress[] = [];
-let userIdCounter = 1;
-let addressIdCounter = 1;
-
-// Simple password hashing (use bcrypt in production)
-function hashPassword(password: string): string {
-  return btoa(password); // Base64 encoding - NOT secure for production
+// Password hashing functions
+async function hashPassword(password: string): Promise<string> {
+  const saltRounds = 12;
+  return await bcrypt.hash(password, saltRounds);
 }
 
-function verifyPassword(password: string, hash: string): boolean {
-  return btoa(password) === hash;
+async function verifyPassword(
+  password: string,
+  hash: string
+): Promise<boolean> {
+  return await bcrypt.compare(password, hash);
+}
+
+// JWT functions
+function generateToken(userId: string): string {
+  return jwt.sign({ userId }, process.env.JWT_SECRET || "fallback-secret", {
+    expiresIn: process.env.JWT_EXPIRES_IN || "7d",
+  } as jwt.SignOptions);
+}
+
+function verifyToken(token: string): { userId: string } | null {
+  try {
+    const decoded = jwt.verify(
+      token,
+      process.env.JWT_SECRET || "fallback-secret"
+    ) as { userId: string };
+    return decoded;
+  } catch (error) {
+    return null;
+  }
 }
 
 export async function createUser(userData: {
@@ -50,86 +72,238 @@ export async function createUser(userData: {
   last_name: string;
   phone?: string;
 }): Promise<User | null> {
-  // Check if user already exists
-  const existingUser = mockUsers.find((user) => user.email === userData.email);
-  if (existingUser) {
-    throw new Error("User already exists");
+  try {
+    await connectDB();
+
+    // Check if user already exists
+    const existingUser = await User.findOne({ email: userData.email });
+    if (existingUser) {
+      throw new Error("User already exists");
+    }
+
+    // Hash the password
+    const hashedPassword = await hashPassword(userData.password);
+
+    // Create user
+    const user = new User({
+      email: userData.email,
+      password_hash: hashedPassword,
+      first_name: userData.first_name,
+      last_name: userData.last_name,
+      phone: userData.phone,
+    });
+
+    const savedUser = await user.save();
+
+    return {
+      _id: savedUser._id.toString(),
+      email: savedUser.email,
+      first_name: savedUser.first_name,
+      last_name: savedUser.last_name,
+      phone: savedUser.phone,
+      created_at: savedUser.created_at.toISOString(),
+      updated_at: savedUser.updated_at.toISOString(),
+    };
+  } catch (error) {
+    console.error("Error creating user:", error);
+    throw error;
   }
-
-  const newUser: User = {
-    id: userIdCounter++,
-    email: userData.email,
-    first_name: userData.first_name,
-    last_name: userData.last_name,
-    phone: userData.phone,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  };
-
-  // Store user with hashed password (password not included in User type for security)
-  mockUsers.push(newUser);
-
-  return newUser;
 }
 
 export async function authenticateUser(
   email: string,
   password: string
 ): Promise<User | null> {
-  const user = mockUsers.find((user) => user.email === email);
-  if (!user) {
+  try {
+    await connectDB();
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      return null;
+    }
+
+    const isValidPassword = await verifyPassword(password, user.password_hash);
+    if (!isValidPassword) {
+      return null;
+    }
+
+    // Return user without password hash
+    return {
+      _id: user._id.toString(),
+      email: user.email,
+      first_name: user.first_name,
+      last_name: user.last_name,
+      phone: user.phone,
+      created_at: user.created_at.toISOString(),
+      updated_at: user.updated_at.toISOString(),
+    };
+  } catch (error) {
+    console.error("Error authenticating user:", error);
     return null;
   }
-
-  // In a real implementation, you'd verify the hashed password
-  // For now, we'll use a simple check
-  return user;
 }
 
-export async function getUserById(id: number): Promise<User | null> {
-  return mockUsers.find((user) => user.id === id) || null;
+export async function getUserById(id: string): Promise<User | null> {
+  try {
+    await connectDB();
+    const user = await User.findById(id);
+    if (!user) return null;
+
+    return {
+      _id: user._id.toString(),
+      email: user.email,
+      first_name: user.first_name,
+      last_name: user.last_name,
+      phone: user.phone,
+      created_at: user.created_at.toISOString(),
+      updated_at: user.updated_at.toISOString(),
+    };
+  } catch (error) {
+    console.error("Error getting user by ID:", error);
+    return null;
+  }
 }
 
 export async function getUserByEmail(email: string): Promise<User | null> {
-  return mockUsers.find((user) => user.email === email) || null;
+  try {
+    await connectDB();
+    const user = await User.findOne({ email });
+    if (!user) return null;
+
+    return {
+      _id: user._id.toString(),
+      email: user.email,
+      first_name: user.first_name,
+      last_name: user.last_name,
+      phone: user.phone,
+      created_at: user.created_at.toISOString(),
+      updated_at: user.updated_at.toISOString(),
+    };
+  } catch (error) {
+    console.error("Error getting user by email:", error);
+    return null;
+  }
 }
 
 export async function createUserAddress(
-  addressData: Omit<UserAddress, "id" | "created_at" | "updated_at">
+  addressData: Omit<UserAddress, "_id" | "created_at" | "updated_at">
 ): Promise<UserAddress> {
-  const newAddress: UserAddress = {
-    ...addressData,
-    id: addressIdCounter++,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  };
+  try {
+    await connectDB();
 
-  mockAddresses.push(newAddress);
-  return newAddress;
+    const address = new UserAddress({
+      user_id: new mongoose.Types.ObjectId(addressData.user_id),
+      type: addressData.type,
+      first_name: addressData.first_name,
+      last_name: addressData.last_name,
+      company: addressData.company,
+      address_line_1: addressData.address_line_1,
+      address_line_2: addressData.address_line_2,
+      city: addressData.city,
+      state: addressData.state,
+      postal_code: addressData.postal_code,
+      country: addressData.country,
+      is_default: addressData.is_default,
+    });
+
+    const savedAddress = await address.save();
+
+    return {
+      _id: savedAddress._id.toString(),
+      user_id: savedAddress.user_id.toString(),
+      type: savedAddress.type,
+      first_name: savedAddress.first_name,
+      last_name: savedAddress.last_name,
+      company: savedAddress.company,
+      address_line_1: savedAddress.address_line_1,
+      address_line_2: savedAddress.address_line_2,
+      city: savedAddress.city,
+      state: savedAddress.state,
+      postal_code: savedAddress.postal_code,
+      country: savedAddress.country,
+      is_default: savedAddress.is_default,
+      created_at: savedAddress.created_at.toISOString(),
+      updated_at: savedAddress.updated_at.toISOString(),
+    };
+  } catch (error) {
+    console.error("Error creating user address:", error);
+    throw error;
+  }
 }
 
-export async function getUserAddresses(userId: number): Promise<UserAddress[]> {
-  return mockAddresses.filter((address) => address.user_id === userId);
+export async function getUserAddresses(userId: string): Promise<UserAddress[]> {
+  try {
+    await connectDB();
+    const addresses = await UserAddress.find({ user_id: userId }).sort({
+      is_default: -1,
+      created_at: -1,
+    });
+
+    return addresses.map((address) => ({
+      _id: address._id.toString(),
+      user_id: address.user_id.toString(),
+      type: address.type,
+      first_name: address.first_name,
+      last_name: address.last_name,
+      company: address.company,
+      address_line_1: address.address_line_1,
+      address_line_2: address.address_line_2,
+      city: address.city,
+      state: address.state,
+      postal_code: address.postal_code,
+      country: address.country,
+      is_default: address.is_default,
+      created_at: address.created_at.toISOString(),
+      updated_at: address.updated_at.toISOString(),
+    }));
+  } catch (error) {
+    console.error("Error getting user addresses:", error);
+    return [];
+  }
 }
 
 export async function getDefaultAddress(
-  userId: number,
+  userId: string,
   type: "shipping" | "billing"
 ): Promise<UserAddress | null> {
-  return (
-    mockAddresses.find(
-      (address) =>
-        address.user_id === userId &&
-        address.type === type &&
-        address.is_default
-    ) || null
-  );
+  try {
+    await connectDB();
+    const address = await UserAddress.findOne({
+      user_id: userId,
+      type: type,
+      is_default: true,
+    });
+
+    if (!address) return null;
+
+    return {
+      _id: address._id.toString(),
+      user_id: address.user_id.toString(),
+      type: address.type,
+      first_name: address.first_name,
+      last_name: address.last_name,
+      company: address.company,
+      address_line_1: address.address_line_1,
+      address_line_2: address.address_line_2,
+      city: address.city,
+      state: address.state,
+      postal_code: address.postal_code,
+      country: address.country,
+      is_default: address.is_default,
+      created_at: address.created_at.toISOString(),
+      updated_at: address.updated_at.toISOString(),
+    };
+  } catch (error) {
+    console.error("Error getting default address:", error);
+    return null;
+  }
 }
 
-// Session management
-export async function setUserSession(userId: number) {
+// Session management with JWT
+export async function setUserSession(userId: string) {
+  const token = generateToken(userId);
   const cookieStore = await cookies();
-  cookieStore.set("user_id", userId.toString(), {
+  cookieStore.set("auth_token", token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
@@ -137,19 +311,37 @@ export async function setUserSession(userId: number) {
   });
 }
 
-export async function getUserSession(): Promise<number | null> {
-  const cookieStore = await cookies();
-  const userId = cookieStore.get("user_id")?.value;
-  return userId ? Number.parseInt(userId) : null;
+export async function getUserSession(): Promise<string | null> {
+  try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get("auth_token")?.value;
+
+    if (!token) return null;
+
+    const decoded = verifyToken(token);
+    return decoded?.userId || null;
+  } catch (error) {
+    console.error("Error getting user session:", error);
+    return null;
+  }
 }
 
 export async function clearUserSession() {
   const cookieStore = await cookies();
-  cookieStore.delete("user_id");
+  cookieStore.delete("auth_token");
 }
 
 export async function getCurrentUser(): Promise<User | null> {
   const userId = await getUserSession();
   if (!userId) return null;
   return await getUserById(userId);
+}
+
+// Middleware function to protect routes
+export async function requireAuth(): Promise<User> {
+  const user = await getCurrentUser();
+  if (!user) {
+    throw new Error("Authentication required");
+  }
+  return user;
 }
