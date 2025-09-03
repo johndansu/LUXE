@@ -4,16 +4,18 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Minus, Plus, Trash2, ArrowLeft, ShoppingBag } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useCart } from "@/lib/cart-context";
+import { showToast } from "@/components/toast";
 
 interface CartItem {
-  id: number;
+  _id: string;
   session_id: string;
-  product_id: number;
+  product_id: string;
   quantity: number;
   created_at: string;
   updated_at: string;
   product?: {
-    id: number;
+    _id: string;
     name: string;
     description: string;
     price: number;
@@ -29,6 +31,7 @@ interface CartItem {
 export default function CartPage() {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const { refreshCart } = useCart();
   const router = useRouter();
 
   useEffect(() => {
@@ -47,8 +50,15 @@ export default function CartPage() {
     fetchCartItems();
   }, []);
 
-  const updateQuantity = async (productId: number, newQuantity: number) => {
+  const updateQuantity = async (productId: string, newQuantity: number) => {
+    if (newQuantity < 1) {
+      await removeItem(productId);
+      return;
+    }
+
     try {
+      console.log("Updating cart:", { productId, newQuantity });
+
       const response = await fetch("/api/cart", {
         method: "PUT",
         headers: {
@@ -60,18 +70,50 @@ export default function CartPage() {
         }),
       });
 
+      console.log("Cart update response:", response.status, response.ok);
+
       if (response.ok) {
-        // Refresh cart items
+        // Refresh cart items directly
         const updatedResponse = await fetch("/api/cart");
         const updatedData = await updatedResponse.json();
         setCartItems(updatedData);
+
+        // Update cart context
+        await refreshCart();
+
+        showToast({
+          type: "success",
+          title: "Cart Updated",
+          message: "Item quantity has been updated",
+        });
+      } else {
+        let errorMessage = "Failed to update item quantity";
+        try {
+          const errorData = await response.json();
+          console.error("Cart update failed:", errorData);
+          errorMessage = errorData.error || errorMessage;
+        } catch (parseError) {
+          console.error("Failed to parse error response:", parseError);
+          errorMessage = `Server error (${response.status}): ${response.statusText}`;
+        }
+
+        showToast({
+          type: "error",
+          title: "Update Failed",
+          message: errorMessage,
+        });
       }
     } catch (error) {
       console.error("Error updating cart:", error);
+      showToast({
+        type: "error",
+        title: "Update Failed",
+        message: "Please try again",
+      });
     }
   };
 
-  const removeItem = async (productId: number) => {
+  const removeItem = async (productId: string) => {
     try {
       const response = await fetch("/api/cart", {
         method: "DELETE",
@@ -82,13 +124,34 @@ export default function CartPage() {
       });
 
       if (response.ok) {
-        // Refresh cart items
+        // Refresh cart items directly
         const updatedResponse = await fetch("/api/cart");
         const updatedData = await updatedResponse.json();
         setCartItems(updatedData);
+
+        // Update cart context
+        await refreshCart();
+
+        showToast({
+          type: "success",
+          title: "Item Removed",
+          message: "Item has been removed from your cart",
+        });
+      } else {
+        const errorData = await response.json();
+        showToast({
+          type: "error",
+          title: "Remove Failed",
+          message: errorData.error || "Failed to remove item from cart",
+        });
       }
     } catch (error) {
       console.error("Error removing item:", error);
+      showToast({
+        type: "error",
+        title: "Remove Failed",
+        message: "Please try again",
+      });
     }
   };
 
@@ -195,7 +258,7 @@ export default function CartPage() {
             <div className="lg:col-span-2 space-y-6">
               {cartItems.map((item, index) => (
                 <motion.div
-                  key={item.id}
+                  key={item._id}
                   className="flex gap-6 p-6 border border-black/10 bg-white"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}

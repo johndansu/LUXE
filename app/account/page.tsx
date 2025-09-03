@@ -1,217 +1,398 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
-import { Header } from "@/components/header"
-import { Footer } from "@/components/footer"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Separator } from "@/components/ui/separator"
-import { User, Package, MapPin, Settings, CreditCard, Heart } from "lucide-react"
-import type { User as UserType, CartItem } from "@/lib/auth"
+import { useState, useEffect } from "react";
+
+import { Footer } from "@/components/footer";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { motion } from "framer-motion";
+import {
+  User,
+  ShoppingBag,
+  Heart,
+  Settings,
+  Edit,
+  Save,
+  X,
+} from "lucide-react";
+import Link from "next/link";
+import { useWishlist } from "@/lib/wishlist-context";
 
 export default function AccountPage() {
-  const [user, setUser] = useState<UserType | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [cartItemCount, setCartItemCount] = useState(0)
-  const router = useRouter()
+  const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [editingProfile, setEditingProfile] = useState(false);
+  const [profileData, setProfileData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+  });
+  const [orders, setOrders] = useState<any[]>([]);
+  const [ordersLoading, setOrdersLoading] = useState(false);
+  const { wishlistItems, refreshWishlist } = useWishlist();
 
   useEffect(() => {
-    async function fetchUserData() {
-      try {
-        const response = await fetch("/api/auth/me")
-        if (response.ok) {
-          const data = await response.json()
-          setUser(data.user)
-        } else {
-          router.push("/")
+    fetch("/api/auth/me")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.user) {
+          setUser(data.user);
+          setProfileData({
+            firstName: data.user.first_name,
+            lastName: data.user.last_name,
+            email: data.user.email,
+          });
         }
-      } catch (error) {
-        console.error("Error fetching user data:", error)
-        router.push("/")
-      } finally {
-        setLoading(false)
-      }
-    }
+      })
+      .catch(() => {
+        // User not logged in
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, []);
 
-    async function fetchCartCount() {
-      try {
-        const response = await fetch("/api/cart")
-        const cartItems: CartItem[] = await response.json()
-        const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0)
-        setCartItemCount(totalItems)
-      } catch (error) {
-        console.error("Error fetching cart count:", error)
+  const fetchOrders = async () => {
+    setOrdersLoading(true);
+    try {
+      const response = await fetch("/api/orders");
+      if (response.ok) {
+        const ordersData = await response.json();
+        setOrders(ordersData);
       }
+    } catch (error) {
+      console.error("Error fetching orders:", error);
+    } finally {
+      setOrdersLoading(false);
     }
+  };
 
-    fetchUserData()
-    fetchCartCount()
-  }, [router])
+  const handleEditProfile = () => {
+    setEditingProfile(true);
+  };
+
+  const handleSaveProfile = async () => {
+    try {
+      // Here you would typically make an API call to update the profile
+      console.log("Saving profile:", profileData);
+      setEditingProfile(false);
+      // You could add a success message here
+    } catch (error) {
+      console.error("Error saving profile:", error);
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setProfileData({
+      firstName: user.first_name,
+      lastName: user.last_name,
+      email: user.email,
+    });
+    setEditingProfile(false);
+  };
 
   if (loading) {
     return (
-      <div className="min-h-screen flex flex-col">
-        <Header cartItemCount={cartItemCount} />
-        <main className="flex-1">
-          <div className="container mx-auto px-4 py-8">
-            <div className="animate-pulse space-y-6">
-              <div className="h-8 bg-muted rounded w-1/3"></div>
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {[...Array(6)].map((_, i) => (
-                  <div key={i} className="h-32 bg-muted rounded-lg"></div>
-                ))}
-              </div>
-            </div>
+      <div className="min-h-screen bg-white">
+        <main className="pt-20 pb-16">
+          <div className="container mx-auto px-4">
+            <div className="text-center">Loading...</div>
           </div>
         </main>
         <Footer />
       </div>
-    )
+    );
   }
 
   if (!user) {
-    return null
+    return (
+      <div className="min-h-screen bg-white">
+        <main className="pt-20 pb-16">
+          <div className="container mx-auto px-4 text-center">
+            <h1 className="text-2xl font-bold mb-4">Please log in</h1>
+            <p className="text-black/60 mb-6">
+              You need to be logged in to view your account.
+            </p>
+            <Link href="/login">
+              <Button className="bg-black hover:bg-black/80 text-white">
+                Go to Login
+              </Button>
+            </Link>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <Header cartItemCount={cartItemCount} />
-      <main className="flex-1">
-        <div className="container mx-auto px-4 py-8">
-          {/* Page Header */}
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold mb-2">My Account</h1>
-            <p className="text-muted-foreground">
-              Welcome back, {user.first_name}! Manage your account and view your orders.
-            </p>
-          </div>
+    <div className="min-h-screen bg-white">
+      <main className="pt-20 pb-16">
+        <div className="container mx-auto px-4 max-w-4xl">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <div className="mb-8">
+              <h1 className="text-3xl font-light tracking-wide mb-2">
+                Welcome back, {user.first_name}
+              </h1>
+              <p className="text-black/60">
+                Manage your account and view your orders
+              </p>
+            </div>
 
-          {/* Account Overview */}
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Profile</CardTitle>
-                <User className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  {user.first_name} {user.last_name}
-                </div>
-                <p className="text-xs text-muted-foreground">{user.email}</p>
-                <Button variant="outline" size="sm" className="mt-3 bg-transparent">
-                  <Settings className="h-4 w-4 mr-2" />
-                  Edit Profile
-                </Button>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Recent Orders</CardTitle>
-                <Package className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">0</div>
-                <p className="text-xs text-muted-foreground">No orders yet</p>
-                <Button variant="outline" size="sm" className="mt-3 bg-transparent">
-                  <Package className="h-4 w-4 mr-2" />
-                  View Orders
-                </Button>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Addresses</CardTitle>
-                <MapPin className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">0</div>
-                <p className="text-xs text-muted-foreground">No addresses saved</p>
-                <Button variant="outline" size="sm" className="mt-3 bg-transparent">
-                  <MapPin className="h-4 w-4 mr-2" />
-                  Add Address
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Quick Actions */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Quick Actions</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <Button variant="outline" className="h-20 flex-col bg-transparent">
-                  <Package className="h-6 w-6 mb-2" />
-                  <span className="text-sm">View Orders</span>
-                </Button>
-                <Button variant="outline" className="h-20 flex-col bg-transparent">
-                  <MapPin className="h-6 w-6 mb-2" />
-                  <span className="text-sm">Manage Addresses</span>
-                </Button>
-                <Button variant="outline" className="h-20 flex-col bg-transparent">
-                  <CreditCard className="h-6 w-6 mb-2" />
-                  <span className="text-sm">Payment Methods</span>
-                </Button>
-                <Button variant="outline" className="h-20 flex-col bg-transparent">
-                  <Heart className="h-6 w-6 mb-2" />
-                  <span className="text-sm">Wishlist</span>
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Separator className="my-8" />
-
-          {/* Account Information */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Account Information</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid md:grid-cols-2 gap-6">
-                <div>
-                  <h3 className="font-semibold mb-2">Personal Information</h3>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Name:</span>
-                      <span>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {/* Profile Card */}
+              <Card className="border-black/10 shadow-lg">
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2">
+                    <User className="w-5 h-5" />
+                    <span>Profile</span>
+                  </CardTitle>
+                  <CardDescription>
+                    Manage your personal information
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {editingProfile ? (
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="firstName">First Name</Label>
+                        <Input
+                          id="firstName"
+                          value={profileData.firstName}
+                          onChange={(e) =>
+                            setProfileData({
+                              ...profileData,
+                              firstName: e.target.value,
+                            })
+                          }
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="lastName">Last Name</Label>
+                        <Input
+                          id="lastName"
+                          value={profileData.lastName}
+                          onChange={(e) =>
+                            setProfileData({
+                              ...profileData,
+                              lastName: e.target.value,
+                            })
+                          }
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="email">Email</Label>
+                        <Input
+                          id="email"
+                          type="email"
+                          value={profileData.email}
+                          onChange={(e) =>
+                            setProfileData({
+                              ...profileData,
+                              email: e.target.value,
+                            })
+                          }
+                        />
+                      </div>
+                      <div className="flex gap-2">
+                        <Button
+                          onClick={handleSaveProfile}
+                          className="flex-1"
+                          size="sm"
+                        >
+                          <Save className="w-4 h-4 mr-2" />
+                          Save
+                        </Button>
+                        <Button
+                          onClick={handleCancelEdit}
+                          variant="outline"
+                          className="flex-1"
+                          size="sm"
+                        >
+                          <X className="w-4 h-4 mr-2" />
+                          Cancel
+                        </Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      <p className="text-sm">
+                        <span className="font-medium">Name:</span>{" "}
                         {user.first_name} {user.last_name}
-                      </span>
+                      </p>
+                      <p className="text-sm">
+                        <span className="font-medium">Email:</span> {user.email}
+                      </p>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Email:</span>
-                      <span>{user.email}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Phone:</span>
-                      <span>{user.phone || "Not provided"}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Member since:</span>
-                      <span>{new Date(user.created_at).toLocaleDateString()}</span>
-                    </div>
-                  </div>
-                </div>
-                <div>
-                  <h3 className="font-semibold mb-2">Account Status</h3>
+                  )}
+                  {!editingProfile && (
+                    <Button
+                      variant="outline"
+                      className="w-full mt-4"
+                      onClick={handleEditProfile}
+                    >
+                      <Edit className="w-4 h-4 mr-2" />
+                      Edit Profile
+                    </Button>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Orders Card */}
+              <Card className="border-black/10 shadow-lg">
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2">
+                    <ShoppingBag className="w-5 h-5" />
+                    <span>Orders</span>
+                  </CardTitle>
+                  <CardDescription>View your order history</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-black/60 mb-4">
+                    Track your recent orders and view order details
+                  </p>
                   <div className="space-y-2">
-                    <Badge variant="secondary" className="bg-green-100 text-green-800">
-                      Active Account
-                    </Badge>
-                    <p className="text-sm text-muted-foreground">Your account is in good standing. Enjoy shopping!</p>
+                    <Button
+                      variant="outline"
+                      className="w-full"
+                      onClick={fetchOrders}
+                      disabled={ordersLoading}
+                    >
+                      {ordersLoading ? "Loading..." : "Load Orders"}
+                    </Button>
+                    {orders.length > 0 && (
+                      <div className="space-y-2 mt-4">
+                        <p className="text-sm font-medium">Recent Orders:</p>
+                        {orders.slice(0, 3).map((order) => (
+                          <div
+                            key={order._id}
+                            className="p-3 border border-black/10 rounded-lg"
+                          >
+                            <div className="flex justify-between items-center">
+                              <div>
+                                <p className="text-sm font-medium">
+                                  Order #{order._id.slice(-6)}
+                                </p>
+                                <p className="text-xs text-black/60">
+                                  {new Date(
+                                    order.created_at
+                                  ).toLocaleDateString()}
+                                </p>
+                              </div>
+                              <div className="text-right">
+                                <p className="text-sm font-medium">
+                                  ${order.total.toFixed(2)}
+                                </p>
+                                <p className="text-xs text-black/60">
+                                  {order.status}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Wishlist Card */}
+              <Card className="border-black/10 shadow-lg">
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2">
+                    <Heart className="w-5 h-5" />
+                    <span>Wishlist</span>
+                  </CardTitle>
+                  <CardDescription>Your saved items</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-black/60 mb-4">
+                    Items you've saved for later
+                  </p>
+                  <div className="space-y-2">
+                    <Button
+                      variant="outline"
+                      className="w-full"
+                      onClick={refreshWishlist}
+                    >
+                      Refresh Wishlist
+                    </Button>
+                    {wishlistItems.length > 0 && (
+                      <div className="text-center py-2">
+                        <p className="text-sm font-medium">
+                          {wishlistItems.length} item
+                          {wishlistItems.length !== 1 ? "s" : ""} in wishlist
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Recent Activity */}
+            <Card className="mt-8 border-black/10 shadow-lg">
+              <CardHeader>
+                <CardTitle>Recent Activity</CardTitle>
+                <CardDescription>Your latest account activity</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="flex items-center space-x-3 p-3 border border-black/10 rounded-lg">
+                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                    <div className="flex-1">
+                      <p className="text-sm font-medium">Account created</p>
+                      <p className="text-xs text-black/60">
+                        {new Date(user.created_at).toLocaleDateString()}
+                      </p>
+                    </div>
+                  </div>
+                  {orders.length > 0 && (
+                    <div className="flex items-center space-x-3 p-3 border border-black/10 rounded-lg">
+                      <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                      <div className="flex-1">
+                        <p className="text-sm font-medium">
+                          {orders.length} order{orders.length !== 1 ? "s" : ""}{" "}
+                          placed
+                        </p>
+                        <p className="text-xs text-black/60">
+                          Latest:{" "}
+                          {new Date(orders[0].created_at).toLocaleDateString()}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                  <div className="flex items-center space-x-3 p-3 border border-black/10 rounded-lg">
+                    <div className="w-2 h-2 bg-gray-500 rounded-full"></div>
+                    <div className="flex-1">
+                      <p className="text-sm font-medium">
+                        Profile last updated
+                      </p>
+                      <p className="text-xs text-black/60">
+                        {new Date(user.updated_at).toLocaleDateString()}
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </motion.div>
         </div>
       </main>
+
       <Footer />
     </div>
-  )
+  );
 }

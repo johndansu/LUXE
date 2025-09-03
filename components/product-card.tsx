@@ -9,17 +9,39 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ShoppingCart, Star, Heart } from "lucide-react";
 import type { Product } from "@/lib/db";
+import { useWishlist } from "@/lib/wishlist-context";
+import { useCart } from "@/lib/cart-context";
 
 interface ProductCardProps {
   product: Product;
-  onAddToCart?: (productId: number) => void;
+  onAddToCart?: (productId: string) => void;
 }
 
 export function ProductCard({ product, onAddToCart }: ProductCardProps) {
-  const handleAddToCart = (e: React.MouseEvent) => {
+  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+  const { addToCart } = useCart();
+
+  const handleAddToCart = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    onAddToCart?.(product.id);
+
+    // Use the cart context if no onAddToCart prop is provided
+    if (onAddToCart) {
+      onAddToCart(product._id);
+    } else {
+      await addToCart(product._id);
+    }
+  };
+
+  const handleWishlistToggle = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (isInWishlist(product._id)) {
+      await removeFromWishlist(product._id);
+    } else {
+      await addToWishlist(product._id);
+    }
   };
 
   return (
@@ -46,9 +68,16 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
           <Button
             variant="secondary"
             size="sm"
-            className="h-8 w-8 p-0 rounded-full bg-white/90 hover:bg-white shadow-lg border border-slate-200"
+            className={`h-8 w-8 p-0 rounded-full bg-white/90 hover:bg-white shadow-lg border border-slate-200 ${
+              isInWishlist(product._id) ? "text-red-500" : "text-slate-600"
+            }`}
+            onClick={handleWishlistToggle}
           >
-            <Heart className="h-4 w-4 text-slate-600" />
+            <Heart
+              className={`h-4 w-4 ${
+                isInWishlist(product._id) ? "fill-current" : ""
+              }`}
+            />
           </Button>
         </div>
       </div>

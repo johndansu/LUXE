@@ -1,5 +1,20 @@
+import connectDB from "./mongodb";
+import {
+  Product,
+  User,
+  UserAddress,
+  CartItem,
+  Order,
+  OrderItem,
+  IProduct,
+  ICartItem,
+  IOrder,
+  IOrderItem,
+} from "./schemas";
+import mongoose from "mongoose";
+
 export interface Product {
-  id: number;
+  _id: string;
   name: string;
   description: string;
   price: number;
@@ -12,226 +27,395 @@ export interface Product {
 }
 
 export interface CartItem {
-  id: number;
+  _id: string;
   session_id: string;
-  product_id: number;
+  product_id: string;
   quantity: number;
   created_at: string;
   updated_at: string;
   product?: Product;
 }
 
-// Mock database functions for now - will be replaced with real DB integration
-const mockProducts: Product[] = [
-  {
-    id: 1,
-    name: "Silk Evening Gown",
-    description:
-      "Elegant black silk evening gown with intricate beading and flowing silhouette",
-    price: 899.99,
-    image_url:
-      "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=800&h=1000&fit=crop&auto=format",
-    category: "Evening Wear",
-    stock_quantity: 15,
-    featured: true,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  },
-  {
-    id: 2,
-    name: "Cashmere Sweater",
-    description:
-      "Luxurious cashmere sweater in soft cream with ribbed texture and relaxed fit",
-    price: 299.99,
-    image_url:
-      "https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=800&h=1000&fit=crop&auto=format",
-    category: "Casual Luxury",
-    stock_quantity: 25,
-    featured: true,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  },
-  {
-    id: 3,
-    name: "Leather Crossbody Bag",
-    description:
-      "Premium leather crossbody bag with gold hardware and adjustable strap",
-    price: 199.99,
-    image_url:
-      "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=800&h=1000&fit=crop&auto=format",
-    category: "Accessories",
-    stock_quantity: 30,
-    featured: false,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  },
-  {
-    id: 4,
-    name: "Silk Blouse",
-    description:
-      "Sophisticated silk blouse in emerald green with pearl buttons and tailored fit",
-    price: 179.99,
-    image_url:
-      "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=800&h=1000&fit=crop&auto=format",
-    category: "Spring Essentials",
-    stock_quantity: 20,
-    featured: true,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  },
-  {
-    id: 5,
-    name: "Wool Trench Coat",
-    description:
-      "Classic wool trench coat in camel with belt and double-breasted design",
-    price: 449.99,
-    image_url:
-      "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=800&h=1000&fit=crop&auto=format",
-    category: "Spring Essentials",
-    stock_quantity: 18,
-    featured: false,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  },
-  {
-    id: 6,
-    name: "Statement Necklace",
-    description:
-      "Bold statement necklace with mixed metals and geometric design",
-    price: 89.99,
-    image_url:
-      "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?w=800&h=1000&fit=crop&auto=format",
-    category: "Accessories",
-    stock_quantity: 40,
-    featured: false,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  },
-  {
-    id: 7,
-    name: "Pencil Skirt",
-    description:
-      "Tailored pencil skirt in navy blue with side slit and stretch fabric",
-    price: 129.99,
-    image_url:
-      "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=800&h=1000&fit=crop&auto=format",
-    category: "Casual Luxury",
-    stock_quantity: 35,
-    featured: true,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  },
-  {
-    id: 8,
-    name: "Silk Scarf",
-    description:
-      "Luxurious silk scarf with abstract floral print and hand-rolled edges",
-    price: 79.99,
-    image_url:
-      "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=800&h=1000&fit=crop&auto=format",
-    category: "Accessories",
-    stock_quantity: 50,
-    featured: false,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  },
-];
+export interface Order {
+  _id: string;
+  user_id?: string;
+  session_id: string;
+  status: string;
+  subtotal: number;
+  shipping_cost: number;
+  tax_amount: number;
+  total_amount: number;
+  shipping_address_id?: string;
+  billing_address_id?: string;
+  created_at: string;
+  updated_at: string;
+}
 
-let mockCart: CartItem[] = [];
+export interface OrderItem {
+  _id: string;
+  order_id: string;
+  product_id: string;
+  quantity: number;
+  price: number;
+  created_at: string;
+}
 
+// Product functions
 export async function getProducts(): Promise<Product[]> {
-  return mockProducts;
+  await connectDB();
+  const products = await Product.find().sort({ created_at: -1 });
+  return products.map((product) => ({
+    _id: product._id.toString(),
+    name: product.name,
+    description: product.description,
+    price: product.price,
+    image_url: product.image_url,
+    category: product.category,
+    stock_quantity: product.stock_quantity,
+    featured: product.featured,
+    created_at: product.created_at.toISOString(),
+    updated_at: product.updated_at.toISOString(),
+  }));
 }
 
 export async function getFeaturedProducts(): Promise<Product[]> {
-  return mockProducts.filter((product) => product.featured);
+  await connectDB();
+  const products = await Product.find({ featured: true }).sort({
+    created_at: -1,
+  });
+  return products.map((product) => ({
+    _id: product._id.toString(),
+    name: product.name,
+    description: product.description,
+    price: product.price,
+    image_url: product.image_url,
+    category: product.category,
+    stock_quantity: product.stock_quantity,
+    featured: product.featured,
+    created_at: product.created_at.toISOString(),
+    updated_at: product.updated_at.toISOString(),
+  }));
 }
 
-export async function getProductById(id: number): Promise<Product | null> {
-  return mockProducts.find((product) => product.id === id) || null;
+export async function getProductById(id: string): Promise<Product | null> {
+  await connectDB();
+  const product = await Product.findById(id);
+  if (!product) return null;
+
+  return {
+    _id: product._id.toString(),
+    name: product.name,
+    description: product.description,
+    price: product.price,
+    image_url: product.image_url,
+    category: product.category,
+    stock_quantity: product.stock_quantity,
+    featured: product.featured,
+    created_at: product.created_at.toISOString(),
+    updated_at: product.updated_at.toISOString(),
+  };
 }
 
 export async function getProductsByCategory(
   category: string
 ): Promise<Product[]> {
-  return mockProducts.filter((product) => product.category === category);
+  await connectDB();
+  const products = await Product.find({ category }).sort({ created_at: -1 });
+  return products.map((product) => ({
+    _id: product._id.toString(),
+    name: product.name,
+    description: product.description,
+    price: product.price,
+    image_url: product.image_url,
+    category: product.category,
+    stock_quantity: product.stock_quantity,
+    featured: product.featured,
+    created_at: product.created_at.toISOString(),
+    updated_at: product.updated_at.toISOString(),
+  }));
 }
 
-export async function searchProducts(query: string): Promise<Product[]> {
-  const lowercaseQuery = query.toLowerCase();
-  return mockProducts.filter(
-    (product) =>
-      product.name.toLowerCase().includes(lowercaseQuery) ||
-      product.description.toLowerCase().includes(lowercaseQuery) ||
-      product.category.toLowerCase().includes(lowercaseQuery)
-  );
+export async function searchProducts(searchQuery: string): Promise<Product[]> {
+  await connectDB();
+  const products = await Product.find({
+    $or: [
+      { name: { $regex: searchQuery, $options: "i" } },
+      { description: { $regex: searchQuery, $options: "i" } },
+      { category: { $regex: searchQuery, $options: "i" } },
+    ],
+  }).sort({ created_at: -1 });
+
+  return products.map((product) => ({
+    _id: product._id.toString(),
+    name: product.name,
+    description: product.description,
+    price: product.price,
+    image_url: product.image_url,
+    category: product.category,
+    stock_quantity: product.stock_quantity,
+    featured: product.featured,
+    created_at: product.created_at.toISOString(),
+    updated_at: product.updated_at.toISOString(),
+  }));
 }
 
+// Cart functions
 export async function addToCart(
   sessionId: string,
-  productId: number,
+  productId: string,
   quantity = 1
 ): Promise<void> {
-  const existingItem = mockCart.find(
-    (item) => item.session_id === sessionId && item.product_id === productId
-  );
+  await connectDB();
+
+  // Check if item already exists in cart
+  const existingItem = await CartItem.findOne({
+    session_id: sessionId,
+    product_id: productId,
+  });
 
   if (existingItem) {
+    // Update existing item quantity
     existingItem.quantity += quantity;
-    existingItem.updated_at = new Date().toISOString();
+    existingItem.updated_at = new Date();
+    await existingItem.save();
   } else {
-    const newItem: CartItem = {
-      id: mockCart.length + 1,
+    // Add new item to cart
+    const newCartItem = new CartItem({
       session_id: sessionId,
       product_id: productId,
-      quantity,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    };
-    mockCart.push(newItem);
+      quantity: quantity,
+    });
+    await newCartItem.save();
   }
 }
 
 export async function getCartItems(sessionId: string): Promise<CartItem[]> {
-  const items = mockCart.filter((item) => item.session_id === sessionId);
+  await connectDB();
+  const cartItems = await CartItem.find({ session_id: sessionId })
+    .populate("product_id")
+    .sort({ created_at: -1 });
 
-  // Attach product data
-  return items.map((item) => ({
-    ...item,
-    product: mockProducts.find((product) => product.id === item.product_id),
+  return cartItems.map((item) => ({
+    _id: item._id.toString(),
+    session_id: item.session_id,
+    product_id: (item.product_id as any)._id.toString(), // Use the populated product's _id
+    quantity: item.quantity,
+    created_at: item.created_at.toISOString(),
+    updated_at: item.updated_at.toISOString(),
+    product: item.product_id
+      ? {
+          _id: (item.product_id as any)._id.toString(),
+          name: (item.product_id as any).name,
+          description: (item.product_id as any).description,
+          price: (item.product_id as any).price,
+          image_url: (item.product_id as any).image_url,
+          category: (item.product_id as any).category,
+          stock_quantity: (item.product_id as any).stock_quantity,
+          featured: (item.product_id as any).featured,
+          created_at: (item.product_id as any).created_at.toISOString(),
+          updated_at: (item.product_id as any).updated_at.toISOString(),
+        }
+      : undefined,
   }));
 }
 
 export async function updateCartItemQuantity(
   sessionId: string,
-  productId: number,
+  productId: string,
   quantity: number
 ): Promise<void> {
-  const item = mockCart.find(
-    (item) => item.session_id === sessionId && item.product_id === productId
+  await connectDB();
+
+  console.log(
+    "updateCartItemQuantity - Session ID:",
+    sessionId,
+    "Product ID:",
+    productId,
+    "Quantity:",
+    quantity
   );
-  if (item) {
-    if (quantity <= 0) {
-      mockCart = mockCart.filter(
-        (item) =>
-          !(item.session_id === sessionId && item.product_id === productId)
+
+  if (quantity <= 0) {
+    await removeFromCart(sessionId, productId);
+  } else {
+    // First check if the cart item exists
+    const existingItem = await CartItem.findOne({
+      session_id: sessionId,
+      product_id: productId,
+    });
+    console.log(
+      "updateCartItemQuantity - Existing item:",
+      existingItem ? "found" : "not found"
+    );
+
+    const result = await CartItem.findOneAndUpdate(
+      { session_id: sessionId, product_id: productId },
+      { quantity: quantity, updated_at: new Date() }
+    );
+
+    if (!result) {
+      throw new Error(
+        `Cart item not found for session ${sessionId} and product ${productId}`
       );
-    } else {
-      item.quantity = quantity;
-      item.updated_at = new Date().toISOString();
     }
   }
 }
 
 export async function removeFromCart(
   sessionId: string,
-  productId: number
+  productId: string
 ): Promise<void> {
-  mockCart = mockCart.filter(
-    (item) => !(item.session_id === sessionId && item.product_id === productId)
-  );
+  await connectDB();
+  await CartItem.deleteOne({
+    session_id: sessionId,
+    product_id: productId,
+  });
 }
 
 export async function clearCart(sessionId: string): Promise<void> {
-  mockCart = mockCart.filter((item) => item.session_id !== sessionId);
+  await connectDB();
+  await CartItem.deleteMany({ session_id: sessionId });
+}
+
+// Order functions
+export async function createOrder(orderData: {
+  user_id?: string;
+  session_id: string;
+  subtotal: number;
+  shipping_cost: number;
+  tax_amount: number;
+  total_amount: number;
+  shipping_address_id?: string;
+  billing_address_id?: string;
+}): Promise<Order> {
+  await connectDB();
+
+  const order = new Order({
+    user_id: orderData.user_id
+      ? new mongoose.Types.ObjectId(orderData.user_id)
+      : undefined,
+    session_id: orderData.session_id,
+    subtotal: orderData.subtotal,
+    shipping_cost: orderData.shipping_cost,
+    tax_amount: orderData.tax_amount,
+    total_amount: orderData.total_amount,
+    shipping_address_id: orderData.shipping_address_id
+      ? new mongoose.Types.ObjectId(orderData.shipping_address_id)
+      : undefined,
+    billing_address_id: orderData.billing_address_id
+      ? new mongoose.Types.ObjectId(orderData.billing_address_id)
+      : undefined,
+  });
+
+  const savedOrder = await order.save();
+
+  return {
+    _id: savedOrder._id.toString(),
+    user_id: savedOrder.user_id?.toString(),
+    session_id: savedOrder.session_id,
+    status: savedOrder.status,
+    subtotal: savedOrder.subtotal,
+    shipping_cost: savedOrder.shipping_cost,
+    tax_amount: savedOrder.tax_amount,
+    total_amount: savedOrder.total_amount,
+    shipping_address_id: savedOrder.shipping_address_id?.toString(),
+    billing_address_id: savedOrder.billing_address_id?.toString(),
+    created_at: savedOrder.created_at.toISOString(),
+    updated_at: savedOrder.updated_at.toISOString(),
+  };
+}
+
+export async function addOrderItem(itemData: {
+  order_id: string;
+  product_id: string;
+  quantity: number;
+  price: number;
+}): Promise<OrderItem> {
+  await connectDB();
+
+  const orderItem = new OrderItem({
+    order_id: new mongoose.Types.ObjectId(itemData.order_id),
+    product_id: new mongoose.Types.ObjectId(itemData.product_id),
+    quantity: itemData.quantity,
+    price: itemData.price,
+  });
+
+  const savedItem = await orderItem.save();
+
+  return {
+    _id: savedItem._id.toString(),
+    order_id: savedItem.order_id.toString(),
+    product_id: savedItem.product_id.toString(),
+    quantity: savedItem.quantity,
+    price: savedItem.price,
+    created_at: savedItem.created_at.toISOString(),
+  };
+}
+
+export async function getOrderById(orderId: string): Promise<Order | null> {
+  await connectDB();
+  const order = await Order.findById(orderId);
+  if (!order) return null;
+
+  return {
+    _id: order._id.toString(),
+    user_id: order.user_id?.toString(),
+    session_id: order.session_id,
+    status: order.status,
+    subtotal: order.subtotal,
+    shipping_cost: order.shipping_cost,
+    tax_amount: order.tax_amount,
+    total_amount: order.total_amount,
+    shipping_address_id: order.shipping_address_id?.toString(),
+    billing_address_id: order.billing_address_id?.toString(),
+    created_at: order.created_at.toISOString(),
+    updated_at: order.updated_at.toISOString(),
+  };
+}
+
+export async function getOrderItems(orderId: string): Promise<OrderItem[]> {
+  await connectDB();
+  const orderItems = await OrderItem.find({ order_id: orderId })
+    .populate("product_id", "name image_url")
+    .sort({ created_at: 1 });
+
+  return orderItems.map((item) => ({
+    _id: item._id.toString(),
+    order_id: item.order_id.toString(),
+    product_id: item.product_id.toString(),
+    quantity: item.quantity,
+    price: item.price,
+    created_at: item.created_at.toISOString(),
+  }));
+}
+
+export async function updateOrderStatus(
+  orderId: string,
+  status: string
+): Promise<void> {
+  await connectDB();
+  await Order.findByIdAndUpdate(orderId, {
+    status: status,
+    updated_at: new Date(),
+  });
+}
+
+export async function getUserOrders(userId: string): Promise<Order[]> {
+  await connectDB();
+  const orders = await Order.find({ user_id: userId }).sort({ created_at: -1 });
+
+  return orders.map((order) => ({
+    _id: order._id.toString(),
+    user_id: order.user_id?.toString(),
+    session_id: order.session_id,
+    status: order.status,
+    subtotal: order.subtotal,
+    shipping_cost: order.shipping_cost,
+    tax_amount: order.tax_amount,
+    total_amount: order.total_amount,
+    shipping_address_id: order.shipping_address_id?.toString(),
+    billing_address_id: order.billing_address_id?.toString(),
+    created_at: order.created_at.toISOString(),
+    updated_at: order.updated_at.toISOString(),
+  }));
 }

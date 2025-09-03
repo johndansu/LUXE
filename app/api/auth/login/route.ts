@@ -1,16 +1,14 @@
 import { NextResponse } from "next/server";
 import { authenticateUser, setUserSession } from "@/lib/auth";
+import { loginSchema, validateData } from "@/lib/validation";
 
 export async function POST(request: Request) {
   try {
-    const { email, password } = await request.json();
+    const body = await request.json();
 
-    if (!email || !password) {
-      return NextResponse.json(
-        { error: "Email and password are required" },
-        { status: 400 }
-      );
-    }
+    // Validate input data
+    const validatedData = validateData(loginSchema, body);
+    const { email, password } = validatedData;
 
     const user = await authenticateUser(email, password);
 
@@ -22,11 +20,19 @@ export async function POST(request: Request) {
     }
 
     // Set session
-    await setUserSession(user.id);
+    await setUserSession(user._id);
 
     return NextResponse.json({ user });
   } catch (error) {
     console.error("Login error:", error);
+
+    if (
+      error instanceof Error &&
+      error.message.startsWith("Validation failed:")
+    ) {
+      return NextResponse.json({ error: error.message }, { status: 400 });
+    }
+
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

@@ -3,6 +3,9 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 // import { SeriousModeProvider } from "@/lib/serious-mode";
 import { MinimalNav } from "@/components/minimal-nav";
+import { ToastContainer } from "@/components/toast";
+import { CartProvider } from "@/lib/cart-context";
+import { WishlistProvider } from "@/lib/wishlist-context";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -21,8 +24,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <MinimalNav />
-        {children}
+        <CartProvider>
+          <WishlistProvider>
+            <MinimalNav />
+            {children}
+            <ToastContainer />
+          </WishlistProvider>
+        </CartProvider>
       </body>
     </html>
   );

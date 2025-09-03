@@ -6,7 +6,11 @@
     "build": "next build",
     "dev": "next dev",
     "lint": "next lint",
-    "start": "next start"
+    "start": "next start",
+    "db:test": "node scripts/test-mongodb.js",
+    "db:seed": "node scripts/seed-mongodb.js",
+    "db:init": "node scripts/seed-mongodb.js",
+    "db:reset": "node scripts/seed-mongodb.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
@@ -39,15 +43,20 @@
     "@radix-ui/react-tooltip": "1.1.6",
     "@vercel/analytics": "1.3.1",
     "autoprefixer": "^10.4.21",
+    "bcryptjs": "^2.4.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "1.0.4",
     "date-fns": "4.1.0",
+    "dotenv": "^17.2.1",
     "embla-carousel-react": "8.5.1",
     "framer-motion": "^12.23.12",
     "geist": "^1.3.1",
     "input-otp": "1.4.1",
+    "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.454.0",
+    "mongodb": "^6.19.0",
+    "mongoose": "^8.18.0",
     "next": "15.2.4",
     "next-themes": "^0.4.6",
     "react": "^19",
@@ -64,6 +73,8 @@
     "zod": "3.25.67"
   },
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^22",
     "@types/react": "^19",
     "@types/react-dom": "^19",
