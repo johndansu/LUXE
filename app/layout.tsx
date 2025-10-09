@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-// import { SeriousModeProvider } from "@/lib/serious-mode";
+import { SeriousModeProvider } from "@/lib/serious-mode";
 import { MinimalNav } from "@/components/minimal-nav";
 import { ToastContainer } from "@/components/toast";
 import { CartProvider } from "@/lib/cart-context";
@@ -24,13 +24,15 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <CartProvider>
-          <WishlistProvider>
-            <MinimalNav />
-            {children}
-            <ToastContainer />
-          </WishlistProvider>
-        </CartProvider>
+        <SeriousModeProvider>
+          <CartProvider>
+            <WishlistProvider>
+              <MinimalNav />
+              {children}
+              <ToastContainer />
+            </WishlistProvider>
+          </CartProvider>
+        </SeriousModeProvider>
       </body>
     </html>
   );

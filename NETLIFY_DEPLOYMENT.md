@@ -118,6 +118,7 @@ If your build fails:
 1. Check the build logs in Netlify dashboard
 2. Ensure all dependencies are in `package.json`
 3. Verify Node version compatibility (using Node 18+)
+4. See [NETLIFY_BUILD_FIXES.md](NETLIFY_BUILD_FIXES.md) for common build errors and solutions
 
 ### Database Connection Issues
 
