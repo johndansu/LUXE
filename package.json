@@ -7,6 +7,7 @@
     "dev": "next dev",
     "lint": "next lint",
     "start": "next start",
+    "deploy": "netlify deploy --prod",
     "db:test": "node scripts/test-mongodb.js",
     "db:seed": "node scripts/seed-mongodb.js",
     "db:init": "node scripts/seed-mongodb.js",

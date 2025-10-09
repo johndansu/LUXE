@@ -223,7 +223,19 @@ NODE_ENV=development
 
 ## 🚀 Deployment
 
-### **Vercel (Recommended)**
+### **Netlify** (Configured & Ready!)
+
+This project is configured for Netlify deployment with `netlify.toml`.
+
+**Quick Deploy:**
+1. Push your code to GitHub
+2. Connect your repository to [Netlify](https://app.netlify.com/)
+3. Add environment variables in Netlify dashboard
+4. Deploy automatically!
+
+📖 **[Complete Netlify Deployment Guide](NETLIFY_DEPLOYMENT.md)** - Step-by-step instructions
+
+### **Vercel**
 
 1. Push your code to GitHub
 2. Connect your repository to Vercel
@@ -232,9 +244,9 @@ NODE_ENV=development
 
 ### **Other Platforms**
 
-- **Netlify** - Static site hosting
 - **Railway** - Full-stack deployment
 - **DigitalOcean** - VPS deployment
+- **AWS Amplify** - AWS deployment
 
 ## 🧪 Testing
 
@@ -263,7 +275,9 @@ npm run dev          # Start development server
 npm run build        # Build for production
 npm run start        # Start production server
 npm run lint         # Run ESLint
-npm run type-check   # Run TypeScript check
+npm run deploy       # Deploy to Netlify (requires Netlify CLI)
+npm run db:seed      # Seed MongoDB database
+npm run db:test      # Test MongoDB connection
 ```
 
 ### **Code Style**
