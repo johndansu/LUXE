@@ -2,6 +2,8 @@
 
 A modern, full-stack e-commerce application built with Next.js, featuring a minimal and elegant design with complete shopping cart, wishlist, and authentication functionality.
 
+> 🚀 **Ready to deploy?** See [DEPLOYMENT_SUMMARY.md](DEPLOYMENT_SUMMARY.md) for Netlify deployment setup!
+
 ![LUXE E-commerce](https://img.shields.io/badge/Next.js-15.2.4-black?style=for-the-badge&logo=next.js)
 ![React](https://img.shields.io/badge/React-18-blue?style=for-the-badge&logo=react)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?style=for-the-badge&logo=typescript)

@@ -160,7 +160,7 @@ const WishlistSchema = new Schema<IWishlist>({
 // Create indexes for better performance
 ProductSchema.index({ category: 1 });
 ProductSchema.index({ featured: 1 });
-UserSchema.index({ email: 1 });
+// Note: email index is already created by unique: true in UserSchema
 CartItemSchema.index({ session_id: 1 });
 OrderSchema.index({ user_id: 1 });
 OrderSchema.index({ session_id: 1 });
