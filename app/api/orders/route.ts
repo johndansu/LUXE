@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { getCurrentUser } from "@/lib/auth";
-import { getUserOrders } from "@/lib/db";
+import { getCurrentUser } from "@/lib/supabase-auth";
+import { getUserOrders } from "@/lib/supabase-db";
 
 export async function GET() {
   try {

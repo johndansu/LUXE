@@ -1,9 +1,14 @@
 import mongoose from "mongoose";
 
 // MongoDB connection configuration
-const MONGODB_URI =
-  process.env.MONGODB_URI ||
-  "mongodb+srv://dansujw_db_user:ghaBfbysXDLRZ0Ej@cluster0.sgcjdsr.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+// IMPORTANT: Set MONGODB_URI in your environment variables (Vercel Dashboard → Settings → Environment Variables)
+const MONGODB_URI = process.env.MONGODB_URI;
+
+if (!MONGODB_URI) {
+  throw new Error(
+    "MONGODB_URI environment variable is not set. Please configure it in Vercel Dashboard → Settings → Environment Variables"
+  );
+}
 
 // Global variable to cache the connection
 let cached = (global as any).mongoose;

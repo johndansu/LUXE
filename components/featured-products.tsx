@@ -22,9 +22,17 @@ export function FeaturedProducts() {
       try {
         const response = await fetch("/api/products?featured=true");
         const data = await response.json();
-        setProducts(data);
+        
+        // Check if response is an error or empty
+        if (data.error || !Array.isArray(data)) {
+          console.error("Error from API:", data.error || "Invalid response");
+          setProducts([]);
+        } else {
+          setProducts(data);
+        }
       } catch (error) {
         console.error("Error fetching featured products:", error);
+        setProducts([]);
       } finally {
         setLoading(false);
       }

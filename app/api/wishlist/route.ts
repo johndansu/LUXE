@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getCurrentUser } from "@/lib/auth";
-import { Wishlist } from "@/lib/schemas";
+import { getCurrentUser } from "@/lib/supabase-auth";
+import { getWishlistItems, addToWishlist, removeFromWishlist } from "@/lib/supabase-db";
 
 export async function GET() {
   try {
@@ -10,9 +10,7 @@ export async function GET() {
       return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
     }
 
-    const wishlist = await Wishlist.find({ user_id: user._id }).populate(
-      "product_id"
-    );
+    const wishlist = await getWishlistItems(user._id);
 
     return NextResponse.json(wishlist);
   } catch (error) {
@@ -41,27 +39,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check if item is already in wishlist
-    const existingItem = await Wishlist.findOne({
-      user_id: user._id,
-      product_id: productId,
-    });
+    await addToWishlist(user._id, productId);
 
-    if (existingItem) {
-      return NextResponse.json(
-        { error: "Item already in wishlist" },
-        { status: 400 }
-      );
-    }
-
-    const wishlistItem = new Wishlist({
-      user_id: user._id,
-      product_id: productId,
-    });
-
-    await wishlistItem.save();
-
-    return NextResponse.json({ success: true, item: wishlistItem });
+    return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Error adding to wishlist:", error);
     return NextResponse.json(
@@ -88,17 +68,7 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    const result = await Wishlist.deleteOne({
-      user_id: user._id,
-      product_id: productId,
-    });
-
-    if (result.deletedCount === 0) {
-      return NextResponse.json(
-        { error: "Item not found in wishlist" },
-        { status: 404 }
-      );
-    }
+    await removeFromWishlist(user._id, productId);
 
     return NextResponse.json({ success: true });
   } catch (error) {

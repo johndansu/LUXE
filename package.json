@@ -11,7 +11,12 @@
     "db:test": "node scripts/test-mongodb.js",
     "db:seed": "node scripts/seed-mongodb.js",
     "db:init": "node scripts/seed-mongodb.js",
-    "db:reset": "node scripts/seed-mongodb.js"
+    "db:reset": "node scripts/seed-mongodb.js",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f mongodb",
+    "docker:shell": "docker exec -it luxe-mongodb mongosh -u admin -p luxe_admin_password_change_this",
+    "docker:restart": "docker-compose restart mongodb"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
@@ -42,6 +47,8 @@
     "@radix-ui/react-toggle": "1.1.1",
     "@radix-ui/react-toggle-group": "1.1.1",
     "@radix-ui/react-tooltip": "1.1.6",
+    "@supabase/ssr": "^0.7.0",
+    "@supabase/supabase-js": "^2.79.0",
     "@vercel/analytics": "1.3.1",
     "autoprefixer": "^10.4.21",
     "bcryptjs": "^2.4.3",

@@ -1,14 +1,15 @@
 import { NextResponse } from "next/server";
-import { getCurrentUser } from "@/lib/auth";
-import { getOrderById, getOrderItems } from "@/lib/db";
+import { getCurrentUser } from "@/lib/supabase-auth";
+import { getOrderById, getOrderItems } from "@/lib/supabase-db";
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const user = await getCurrentUser();
-    const orderId = params.id;
+    const resolvedParams = await params;
+    const orderId = resolvedParams.id;
 
     if (!user) {
       return NextResponse.json(

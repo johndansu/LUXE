@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { authenticateUser, setUserSession } from "@/lib/auth";
+import { authenticateUser } from "@/lib/supabase-auth";
 import { loginSchema, validateData } from "@/lib/validation";
 
 export async function POST(request: Request) {
@@ -19,9 +19,7 @@ export async function POST(request: Request) {
       );
     }
 
-    // Set session
-    await setUserSession(user._id);
-
+    // Supabase handles session automatically via cookies
     return NextResponse.json({ user });
   } catch (error) {
     console.error("Login error:", error);

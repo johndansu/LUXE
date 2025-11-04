@@ -5,14 +5,14 @@ import {
   updateCartItemQuantity,
   removeFromCart,
   clearCart,
-} from "@/lib/db";
+} from "@/lib/supabase-db";
 import {
   addToCartSchema,
   updateCartSchema,
   validateData,
 } from "@/lib/validation";
 import { cookies } from "next/headers";
-import { getCurrentUser } from "@/lib/auth";
+import { getCurrentUser } from "@/lib/supabase-auth";
 
 async function getSessionId(): Promise<string> {
   // First check if user is authenticated
@@ -50,7 +50,7 @@ export async function GET() {
       sessionId
     );
 
-    const cartItems = await getCartItems(sessionId);
+    const cartItems = await getCartItems(sessionId, user?._id || null);
     console.log("GET /api/cart - Found cart items:", cartItems.length);
 
     const response = NextResponse.json(cartItems);
@@ -94,7 +94,7 @@ export async function POST(request: Request) {
       quantity
     );
 
-    await addToCart(sessionId, productId, quantity);
+    await addToCart(sessionId, productId, user?._id || null, quantity);
 
     const response = NextResponse.json({ success: true });
 
@@ -133,6 +133,7 @@ export async function PUT(request: Request) {
 
     const validatedData = validateData(updateCartSchema, body);
     const { productId, quantity } = validatedData;
+    const user = await getCurrentUser();
     const sessionId = await getSessionId();
 
     console.log(
@@ -145,7 +146,7 @@ export async function PUT(request: Request) {
     );
 
     try {
-      await updateCartItemQuantity(sessionId, productId, quantity);
+      await updateCartItemQuantity(sessionId, productId, quantity, user?._id || null);
       return NextResponse.json({ success: true });
     } catch (dbError) {
       console.error("Database error in updateCartItemQuantity:", dbError);
@@ -177,12 +178,13 @@ export async function DELETE(request: Request) {
     const { searchParams } = new URL(request.url);
     const productId = searchParams.get("productId");
     const clearAll = searchParams.get("clearAll");
+    const user = await getCurrentUser();
     const sessionId = await getSessionId();
 
     if (clearAll === "true") {
-      await clearCart(sessionId);
+      await clearCart(sessionId, user?._id || null);
     } else if (productId) {
-      await removeFromCart(sessionId, productId);
+      await removeFromCart(sessionId, productId, user?._id || null);
     }
 
     return NextResponse.json({ success: true });

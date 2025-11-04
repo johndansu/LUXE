@@ -48,17 +48,25 @@ async function verifyPassword(
 
 // JWT functions
 function generateToken(userId: string): string {
-  return jwt.sign({ userId }, process.env.JWT_SECRET || "fallback-secret", {
+  const jwtSecret = process.env.JWT_SECRET;
+  if (!jwtSecret) {
+    throw new Error(
+      "JWT_SECRET environment variable is not set. Please configure it in Vercel Dashboard → Settings → Environment Variables"
+    );
+  }
+  return jwt.sign({ userId }, jwtSecret, {
     expiresIn: process.env.JWT_EXPIRES_IN || "7d",
   } as jwt.SignOptions);
 }
 
 function verifyToken(token: string): { userId: string } | null {
   try {
-    const decoded = jwt.verify(
-      token,
-      process.env.JWT_SECRET || "fallback-secret"
-    ) as { userId: string };
+    const jwtSecret = process.env.JWT_SECRET;
+    if (!jwtSecret) {
+      console.error("JWT_SECRET environment variable is not set");
+      return null;
+    }
+    const decoded = jwt.verify(token, jwtSecret) as { userId: string };
     return decoded;
   } catch (error) {
     return null;
