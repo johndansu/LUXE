@@ -2,7 +2,11 @@
 
 A modern, full-stack e-commerce application built with Next.js, featuring a minimal and elegant design with complete shopping cart, wishlist, and authentication functionality.
 
-> 🚀 **Ready to deploy?** See [DEPLOYMENT_SUMMARY.md](DEPLOYMENT_SUMMARY.md) for Netlify deployment setup!
+> 🚨 **Having deployment issues?** → [**START_HERE.md**](START_HERE.md) ← Click this!
+> 
+> 🐳 **Want Docker for MongoDB?** → [**DOCKER_QUICK_START.md**](DOCKER_QUICK_START.md) (2 minutes!)
+> 
+> ⚡ **Quick Vercel Fix:** [URGENT_FIX_VERCEL.md](URGENT_FIX_VERCEL.md) | 📖 **Full Guides:** [Vercel](VERCEL_DEPLOYMENT.md) | [Netlify](NETLIFY_DEPLOYMENT.md)
 
 ![LUXE E-commerce](https://img.shields.io/badge/Next.js-15.2.4-black?style=for-the-badge&logo=next.js)
 ![React](https://img.shields.io/badge/React-18-blue?style=for-the-badge&logo=react)
@@ -45,7 +49,9 @@ A modern, full-stack e-commerce application built with Next.js, featuring a mini
 ### Prerequisites
 
 - Node.js 18+
-- MongoDB Atlas account
+- **Database:** Choose one:
+  - 🐳 **Docker** (recommended for local development) - [See Docker Setup](DOCKER_SETUP.md)
+  - ☁️ **MongoDB Atlas** (cloud-hosted, free tier available)
 - Git
 
 ### Installation
@@ -63,17 +69,31 @@ A modern, full-stack e-commerce application built with Next.js, featuring a mini
    npm install
    ```
 
-3. **Environment Setup**
+3. **Database Setup**
 
+   **Option A: Full Docker Stack (Node.js in Docker)**
    ```bash
-   cp .env.local.example .env.local
+   # Start everything: App + MongoDB
+   docker-compose up
    ```
+   
+   📖 **[Full Docker Stack Guide →](DOCKER_FULL_STACK.md)** - Everything in Docker!
 
-   Update `.env.local` with your MongoDB Atlas connection string:
+   **Option B: Docker MongoDB Only (Node.js locally)**
+   ```bash
+   # Start MongoDB with Docker
+   npm run docker:up
+   
+   # Copy Docker environment file
+   cp env.docker.example .env.local
+   ```
+   
+   📖 **[Docker Setup Guide →](DOCKER_SETUP.md)**
 
-   ```env
-   MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
-   JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
+   **Option C: MongoDB Atlas (Cloud)**
+   ```bash
+   cp env.mongodb.example .env.local
+   # Update with your MongoDB Atlas connection string
    ```
 
 4. **Seed the database** (optional)
@@ -273,13 +293,25 @@ curl http://localhost:3000/api/products
 ### **Available Scripts**
 
 ```bash
+# Development
 npm run dev          # Start development server
 npm run build        # Build for production
 npm run start        # Start production server
 npm run lint         # Run ESLint
+
+# Deployment
 npm run deploy       # Deploy to Netlify (requires Netlify CLI)
+
+# Database
 npm run db:seed      # Seed MongoDB database
 npm run db:test      # Test MongoDB connection
+
+# Docker (MongoDB)
+npm run docker:up    # Start MongoDB in Docker
+npm run docker:down  # Stop MongoDB
+npm run docker:logs  # View MongoDB logs
+npm run docker:shell # Access MongoDB shell
+npm run docker:restart # Restart MongoDB
 ```
 
 ### **Code Style**

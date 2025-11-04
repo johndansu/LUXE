@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
-import { getCurrentUser, getUserSession } from "@/lib/auth";
+import { getCurrentUser } from "@/lib/supabase-auth";
 import {
   getCartItems,
   createOrder,
   addOrderItem,
   clearCart,
   getProductById,
-} from "@/lib/db";
+} from "@/lib/supabase-db";
 import { cookies } from "next/headers";
 
 async function getSessionId(): Promise<string> {
@@ -26,11 +26,12 @@ export async function POST(request: Request) {
   try {
     const { shippingAddress, billingAddress, paymentMethod } =
       await request.json();
+    const user = await getCurrentUser();
     const sessionId = await getSessionId();
-    const userId = await getUserSession();
+    const userId = user?._id || null;
 
     // Get cart items
-    const cartItems = await getCartItems(sessionId);
+    const cartItems = await getCartItems(sessionId, userId);
 
     if (cartItems.length === 0) {
       return NextResponse.json({ error: "Cart is empty" }, { status: 400 });
@@ -87,7 +88,7 @@ export async function POST(request: Request) {
     }
 
     // Clear cart
-    await clearCart(sessionId);
+    await clearCart(sessionId, userId);
 
     return NextResponse.json({
       orderId: order._id,

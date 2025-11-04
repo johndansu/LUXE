@@ -31,12 +31,16 @@ export default function ProductsPage() {
   const fetchCartCount = async () => {
     try {
       const response = await fetch("/api/cart");
-      const cartItems: CartItem[] = await response.json();
-      const totalItems = cartItems.reduce(
-        (sum, item) => sum + item.quantity,
-        0
-      );
-      setCartItemCount(totalItems);
+      const data = await response.json();
+      
+      // Check if response is valid
+      if (!data.error && Array.isArray(data)) {
+        const totalItems = data.reduce(
+          (sum: number, item: CartItem) => sum + item.quantity,
+          0
+        );
+        setCartItemCount(totalItems);
+      }
     } catch (error) {
       console.error("Error fetching cart count:", error);
     }
@@ -58,9 +62,17 @@ export default function ProductsPage() {
 
         const response = await fetch(url);
         const data = await response.json();
-        setProducts(data);
+        
+        // Check if response is an error or empty
+        if (data.error || !Array.isArray(data)) {
+          console.error("Error from API:", data.error || "Invalid response");
+          setProducts([]);
+        } else {
+          setProducts(data);
+        }
       } catch (error) {
         console.error("Error fetching products:", error);
+        setProducts([]);
       } finally {
         setLoading(false);
       }
