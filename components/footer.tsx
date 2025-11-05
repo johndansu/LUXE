@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { Instagram, Facebook, Twitter } from "lucide-react";
 
 export function Footer() {
   return (
@@ -175,21 +176,24 @@ export function Footer() {
             <div className="flex space-x-4">
               <a
                 href="#"
-                className="w-10 h-10 border border-black/20 text-black hover:border-black/40 transition-all duration-300 flex items-center justify-center"
+                className="w-10 h-10 border border-black/20 text-black hover:border-black hover:bg-black hover:text-white transition-all duration-300 flex items-center justify-center group"
+                aria-label="Instagram"
               >
-                <span className="text-lg">📷</span>
+                <Instagram className="w-4 h-4 group-hover:scale-110 transition-transform duration-300" />
               </a>
               <a
                 href="#"
-                className="w-10 h-10 border border-black/20 text-black hover:border-black/40 transition-all duration-300 flex items-center justify-center"
+                className="w-10 h-10 border border-black/20 text-black hover:border-black hover:bg-black hover:text-white transition-all duration-300 flex items-center justify-center group"
+                aria-label="Facebook"
               >
-                <span className="text-lg">📘</span>
+                <Facebook className="w-4 h-4 group-hover:scale-110 transition-transform duration-300" />
               </a>
               <a
                 href="#"
-                className="w-10 h-10 border border-black/20 text-black hover:border-black/40 transition-all duration-300 flex items-center justify-center"
+                className="w-10 h-10 border border-black/20 text-black hover:border-black hover:bg-black hover:text-white transition-all duration-300 flex items-center justify-center group"
+                aria-label="Twitter"
               >
-                <span className="text-lg">🐦</span>
+                <Twitter className="w-4 h-4 group-hover:scale-110 transition-transform duration-300" />
               </a>
             </div>
           </motion.div>
