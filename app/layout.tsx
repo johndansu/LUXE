@@ -10,10 +10,10 @@ import { WishlistProvider } from "@/lib/wishlist-context";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "EliteStore - Professional Business Solutions",
+  title: "LUXE - Timeless Style",
   description:
-    "Enterprise-grade products and services designed for modern businesses. Enhance productivity, security, and performance with our curated solutions.",
-  generator: "EliteStore Professional Platform",
+    "Discover the art of sophisticated dressing. Each piece tells a story of craftsmanship, elegance, and timeless beauty that transcends seasons.",
+  generator: "LUXE E-commerce Platform",
 };
 
 export default function RootLayout({
