@@ -7,7 +7,7 @@ import { Footer } from "@/components/footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle, Package, Mail, ArrowRight } from "lucide-react";
-import type { CartItem } from "@/lib/db";
+import type { CartItem } from "@/lib/supabase-db";
 
 export default function CheckoutSuccessPage() {
   const [cartItemCount, setCartItemCount] = useState(0);

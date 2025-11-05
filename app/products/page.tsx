@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Filter, X } from "lucide-react";
-import type { Product, CartItem } from "@/lib/db";
+import type { Product, CartItem } from "@/lib/supabase-db";
 
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);

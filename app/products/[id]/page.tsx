@@ -17,7 +17,7 @@ import {
   RotateCcw,
   Heart,
 } from "lucide-react";
-import type { Product, CartItem } from "@/lib/db";
+import type { Product, CartItem } from "@/lib/supabase-db";
 
 export default function ProductDetailPage() {
   const [product, setProduct] = useState<Product | null>(null);
