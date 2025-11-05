@@ -12,6 +12,7 @@
     "db:seed": "node scripts/seed-mongodb.js",
     "db:init": "node scripts/seed-mongodb.js",
     "db:reset": "node scripts/seed-mongodb.js",
+    "supabase:seed": "node scripts/seed-supabase.js",
     "docker:up": "docker-compose up -d",
     "docker:down": "docker-compose down",
     "docker:logs": "docker-compose logs -f mongodb",
