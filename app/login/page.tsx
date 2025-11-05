@@ -41,7 +41,8 @@ export default function LoginPage() {
       const data = await response.json();
 
       if (response.ok) {
-        router.push("/");
+        // Use window.location for full page reload to ensure cookies are read
+        window.location.href = "/";
       } else {
         setError(data.error || "Login failed");
       }
