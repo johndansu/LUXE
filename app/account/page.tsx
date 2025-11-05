@@ -81,12 +81,41 @@ export default function AccountPage() {
 
   const handleSaveProfile = async () => {
     try {
-      // Here you would typically make an API call to update the profile
-      console.log("Saving profile:", profileData);
-      setEditingProfile(false);
-      // You could add a success message here
+      const response = await fetch("/api/auth/profile", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          firstName: profileData.firstName,
+          lastName: profileData.lastName,
+          email: profileData.email,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // Update user state with new data
+        setUser(data.user);
+        setEditingProfile(false);
+        // Refresh user data to ensure consistency
+        const meResponse = await fetch("/api/auth/me");
+        const meData = await meResponse.json();
+        if (meData.user) {
+          setUser(meData.user);
+          setProfileData({
+            firstName: meData.user.first_name,
+            lastName: meData.user.last_name,
+            email: meData.user.email,
+          });
+        }
+      } else {
+        alert(data.error || "Failed to update profile");
+      }
     } catch (error) {
       console.error("Error saving profile:", error);
+      alert("An error occurred while saving your profile");
     }
   };
 
