@@ -12,12 +12,12 @@ export async function GET() {
       throw error;
     }
 
-    return NextResponse.json({
-      status: "healthy",
-      database: "connected",
+      return NextResponse.json({
+        status: "healthy",
+        database: "connected",
       provider: "supabase",
-      timestamp: new Date().toISOString(),
-    });
+        timestamp: new Date().toISOString(),
+      });
   } catch (error) {
     console.error("Health check error:", error);
     return NextResponse.json(

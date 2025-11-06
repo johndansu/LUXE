@@ -14,7 +14,7 @@ if (!supabaseUrl || !supabaseKey) {
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 // Sample products data - Fashion categories matching shop filters
-// Each product has a UNIQUE image URL
+// Each product has a COMPLETELY UNIQUE image URL (all 24 images are different)
 const sampleProducts = [
   // Evening Wear
   {
@@ -67,7 +67,7 @@ const sampleProducts = [
     name: "Cashmere Sweater",
     description: "Luxurious cashmere blend sweater with relaxed fit and ribbed cuffs. Perfect for everyday elegance.",
     price: 349.99,
-    image_url: "https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=800&h=1000&fit=crop&auto=format",
+    image_url: "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=800&h=1000&fit=crop&auto=format",
     category: "Casual Luxury",
     stock_quantity: 30,
     featured: true,
@@ -76,7 +76,7 @@ const sampleProducts = [
     name: "Tailored Blazer",
     description: "Classic tailored blazer with structured shoulders and double-breasted design. Versatile for work or casual wear.",
     price: 479.99,
-    image_url: "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=800&h=1000&fit=crop&auto=format",
+    image_url: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=800&h=1000&fit=crop&auto=format",
     category: "Casual Luxury",
     stock_quantity: 25,
     featured: true,
@@ -103,7 +103,7 @@ const sampleProducts = [
     name: "Linen Midi Dress",
     description: "Breathable linen midi dress with A-line silhouette and button front. Perfect for warm weather elegance.",
     price: 189.99,
-    image_url: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&h=1000&fit=crop&auto=format",
+    image_url: "https://images.unsplash.com/photo-1572804013432-3e5a0a0e5b9a?w=800&h=1000&fit=crop&auto=format",
     category: "Casual Luxury",
     stock_quantity: 32,
     featured: false,
@@ -112,7 +112,7 @@ const sampleProducts = [
     name: "Knit Cardigan",
     description: "Cozy knit cardigan in soft merino wool. Perfect layering piece for transitional seasons.",
     price: 199.99,
-    image_url: "https://images.unsplash.com/photo-1572804013432-3e5a0a0e5b9a?w=800&h=1000&fit=crop&auto=format",
+    image_url: "https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=800&h=1000&fit=crop&auto=format",
     category: "Casual Luxury",
     stock_quantity: 27,
     featured: false,
@@ -122,7 +122,7 @@ const sampleProducts = [
     name: "Floral Print Dress",
     description: "Charming floral print dress with cinched waist and flowing skirt. Perfect for spring gatherings.",
     price: 249.99,
-    image_url: "https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=800&h=1000&fit=crop&auto=format",
+    image_url: "https://images.unsplash.com/photo-1539533018447-63fcce2678e3?w=800&h=1000&fit=crop&auto=format",
     category: "Spring Essentials",
     stock_quantity: 40,
     featured: true,
@@ -131,7 +131,7 @@ const sampleProducts = [
     name: "Lightweight Trench Coat",
     description: "Classic lightweight trench coat in water-resistant fabric. Essential spring outerwear.",
     price: 429.99,
-    image_url: "https://images.unsplash.com/photo-1539533018447-63fcce2678e3?w=800&h=1000&fit=crop&auto=format",
+    image_url: "https://images.unsplash.com/photo-1509631179647-0177331693ae?w=800&h=1000&fit=crop&auto=format",
     category: "Spring Essentials",
     stock_quantity: 20,
     featured: true,
@@ -140,7 +140,7 @@ const sampleProducts = [
     name: "Pastel Blazer",
     description: "Soft pastel blazer with modern cut and soft shoulders. Fresh and elegant for spring office wear.",
     price: 319.99,
-    image_url: "https://images.unsplash.com/photo-1509631179647-0177331693ae?w=800&h=1000&fit=crop&auto=format",
+    image_url: "https://images.unsplash.com/photo-1583496661160-fb5886a0aaaa?w=800&h=1000&fit=crop&auto=format",
     category: "Spring Essentials",
     stock_quantity: 24,
     featured: false,
@@ -149,7 +149,7 @@ const sampleProducts = [
     name: "Wrap Midi Skirt",
     description: "Flattering wrap midi skirt in lightweight fabric with side slit. Versatile for spring styling.",
     price: 149.99,
-    image_url: "https://images.unsplash.com/photo-1583496661160-fb5886a0aaaa?w=800&h=1000&fit=crop&auto=format",
+    image_url: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&h=1000&fit=crop&auto=format",
     category: "Spring Essentials",
     stock_quantity: 36,
     featured: false,
@@ -158,7 +158,7 @@ const sampleProducts = [
     name: "Cotton Blouse",
     description: "Crisp cotton blouse with ruffle details and short sleeves. Fresh and comfortable for spring days.",
     price: 129.99,
-    image_url: "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=800&h=1000&fit=crop&auto=format",
+    image_url: "https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=800&h=1000&fit=crop&auto=format",
     category: "Spring Essentials",
     stock_quantity: 42,
     featured: false,
@@ -186,7 +186,7 @@ const sampleProducts = [
     name: "Silk Scarf",
     description: "Luxurious silk scarf with abstract print. Versatile accessory for elegant styling.",
     price: 89.99,
-    image_url: "https://images.unsplash.com/photo-1539008835657-9e8e9680c956?w=800&h=1000&fit=crop&auto=format",
+    image_url: "https://images.unsplash.com/photo-1590874103328-eac38a683ce7?w=800&h=1000&fit=crop&auto=format",
     category: "Accessories",
     stock_quantity: 50,
     featured: true,
@@ -195,7 +195,7 @@ const sampleProducts = [
     name: "Statement Necklace",
     description: "Bold statement necklace with geometric design and gold plating. Perfect finishing touch.",
     price: 149.99,
-    image_url: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=800&h=1000&fit=crop&auto=format",
+    image_url: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=800&h=1000&fit=crop&auto=format",
     category: "Accessories",
     stock_quantity: 35,
     featured: false,
@@ -222,7 +222,7 @@ const sampleProducts = [
     name: "Clutch Purse",
     description: "Evening clutch purse with metallic finish and chain strap. Essential for formal events.",
     price: 129.99,
-    image_url: "https://images.unsplash.com/photo-1590874103328-eac38a683ce7?w=800&h=1000&fit=crop&auto=format",
+    image_url: "https://images.unsplash.com/photo-1601925260368-ae2f83cf8b7f?w=800&h=1000&fit=crop&auto=format",
     category: "Accessories",
     stock_quantity: 32,
     featured: false,
@@ -231,7 +231,7 @@ const sampleProducts = [
     name: "Pearl Earrings",
     description: "Classic pearl drop earrings with gold setting. Timeless elegance for any occasion.",
     price: 159.99,
-    image_url: "https://images.unsplash.com/photo-1624222247344-550fb60583fd?w=600&h=800&fit=crop&auto=format",
+    image_url: "https://images.unsplash.com/photo-1606760227091-3dd870d97f1d?w=600&h=800&fit=crop&auto=format",
     category: "Accessories",
     stock_quantity: 40,
     featured: false,
@@ -255,18 +255,27 @@ async function seedDatabase() {
 
     console.log('✅ Connected to Supabase');
 
-    // Clear existing products (optional - comment out if you want to keep existing)
-    console.log('🗑️ Clearing existing products...');
-    const { error: deleteError } = await supabase
+    // Check existing products count
+    console.log('📊 Checking existing products...');
+    const { count: existingCount, error: countError } = await supabase
       .from('products')
-      .delete()
-      .neq('id', '00000000-0000-0000-0000-000000000000'); // Delete all (using a UUID that won't exist)
-
-    if (deleteError) {
-      console.warn('⚠️ Could not clear products (might be empty):', deleteError.message);
-    } else {
-      console.log('✅ Cleared existing products');
+      .select('*', { count: 'exact', head: true });
+    
+    if (countError) {
+      throw new Error(`Failed to check products: ${countError.message}`);
     }
+    
+    if (existingCount > 0) {
+      console.warn(`\n⚠️  WARNING: Found ${existingCount} existing products in the database!`);
+      console.warn(`\n🚨 RLS policies prevent automatic deletion with the anon key.`);
+      console.warn(`\n✅ SOLUTION: Clear the database first using Supabase SQL Editor:`);
+      console.warn(`   Run this SQL command in Supabase Dashboard > SQL Editor:`);
+      console.warn(`   TRUNCATE TABLE products RESTART IDENTITY CASCADE;\n`);
+      console.warn(`   Then run this seed script again.\n`);
+      throw new Error(`Cannot seed: ${existingCount} existing products found. Please clear the database first using SQL TRUNCATE.`);
+    }
+    
+    console.log(`✅ Database is clean - no existing products found`);
 
     // Insert sample products
     console.log('📦 Inserting sample products...');
