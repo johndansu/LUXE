@@ -14,13 +14,14 @@ if (!supabaseUrl || !supabaseKey) {
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 // Sample products data - Fashion categories matching shop filters
+// Each product has a UNIQUE image URL
 const sampleProducts = [
   // Evening Wear
   {
     name: "Silk Evening Gown",
     description: "Elegant floor-length silk gown with delicate beading and flowing silhouette. Perfect for formal occasions and special events.",
     price: 899.99,
-    image_url: "https://images.unsplash.com/photo-1594633313593-bab3825d0caf?w=800&h=1000&fit=crop&auto=format",
+    image_url: "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=800&h=1000&fit=crop&auto=format",
     category: "Evening Wear",
     stock_quantity: 15,
     featured: true,
@@ -38,7 +39,7 @@ const sampleProducts = [
     name: "Embellished Cocktail Dress",
     description: "Stunning cocktail dress with sequin embellishments and A-line silhouette. Ideal for cocktail parties and evening gatherings.",
     price: 549.99,
-    image_url: "https://images.unsplash.com/photo-1566479179817-2785d0c0b7c8?w=800&h=1000&fit=crop&auto=format",
+    image_url: "https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=800&h=1000&fit=crop&auto=format",
     category: "Evening Wear",
     stock_quantity: 18,
     featured: false,
@@ -47,7 +48,7 @@ const sampleProducts = [
     name: "Velvet Wrap Dress",
     description: "Luxurious velvet wrap dress with V-neckline and flowing skirt. Perfect for winter evening events.",
     price: 599.99,
-    image_url: "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=800&h=1000&fit=crop&auto=format",
+    image_url: "https://images.unsplash.com/photo-1539008835657-9e8e9680c956?w=800&h=1000&fit=crop&auto=format",
     category: "Evening Wear",
     stock_quantity: 12,
     featured: false,
@@ -56,7 +57,7 @@ const sampleProducts = [
     name: "Chiffon Maxi Dress",
     description: "Romantic chiffon maxi dress with floral print and tiered layers. Elegant and graceful for special occasions.",
     price: 499.99,
-    image_url: "https://images.unsplash.com/photo-1583496661160-fb5886a0aaaa?w=800&h=1000&fit=crop&auto=format",
+    image_url: "https://images.unsplash.com/photo-1566479179817-2785d0c0b7c8?w=800&h=1000&fit=crop&auto=format",
     category: "Evening Wear",
     stock_quantity: 22,
     featured: false,
@@ -102,7 +103,7 @@ const sampleProducts = [
     name: "Linen Midi Dress",
     description: "Breathable linen midi dress with A-line silhouette and button front. Perfect for warm weather elegance.",
     price: 189.99,
-    image_url: "https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=800&h=1000&fit=crop&auto=format",
+    image_url: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&h=1000&fit=crop&auto=format",
     category: "Casual Luxury",
     stock_quantity: 32,
     featured: false,
@@ -111,7 +112,7 @@ const sampleProducts = [
     name: "Knit Cardigan",
     description: "Cozy knit cardigan in soft merino wool. Perfect layering piece for transitional seasons.",
     price: 199.99,
-    image_url: "https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=800&h=1000&fit=crop&auto=format",
+    image_url: "https://images.unsplash.com/photo-1572804013432-3e5a0a0e5b9a?w=800&h=1000&fit=crop&auto=format",
     category: "Casual Luxury",
     stock_quantity: 27,
     featured: false,
@@ -121,7 +122,7 @@ const sampleProducts = [
     name: "Floral Print Dress",
     description: "Charming floral print dress with cinched waist and flowing skirt. Perfect for spring gatherings.",
     price: 249.99,
-    image_url: "https://images.unsplash.com/photo-1566479179817-2785d0c0b7c8?w=800&h=1000&fit=crop&auto=format",
+    image_url: "https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=800&h=1000&fit=crop&auto=format",
     category: "Spring Essentials",
     stock_quantity: 40,
     featured: true,
@@ -139,7 +140,7 @@ const sampleProducts = [
     name: "Pastel Blazer",
     description: "Soft pastel blazer with modern cut and soft shoulders. Fresh and elegant for spring office wear.",
     price: 319.99,
-    image_url: "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=800&h=1000&fit=crop&auto=format",
+    image_url: "https://images.unsplash.com/photo-1509631179647-0177331693ae?w=800&h=1000&fit=crop&auto=format",
     category: "Spring Essentials",
     stock_quantity: 24,
     featured: false,
@@ -157,7 +158,7 @@ const sampleProducts = [
     name: "Cotton Blouse",
     description: "Crisp cotton blouse with ruffle details and short sleeves. Fresh and comfortable for spring days.",
     price: 129.99,
-    image_url: "https://images.unsplash.com/photo-1594633313593-bab3825d0caf?w=800&h=1000&fit=crop&auto=format",
+    image_url: "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=800&h=1000&fit=crop&auto=format",
     category: "Spring Essentials",
     stock_quantity: 42,
     featured: false,
@@ -166,7 +167,7 @@ const sampleProducts = [
     name: "Woven Bag",
     description: "Stylish woven tote bag with leather handles. Perfect spring accessory for everyday use.",
     price: 179.99,
-    image_url: "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=800&h=1000&fit=crop&auto=format",
+    image_url: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=800&h=1000&fit=crop&auto=format",
     category: "Spring Essentials",
     stock_quantity: 38,
     featured: false,
@@ -212,7 +213,7 @@ const sampleProducts = [
     name: "Leather Belt",
     description: "Elegant leather belt with minimalist buckle. Perfect for defining waistlines.",
     price: 79.99,
-    image_url: "https://images.unsplash.com/photo-1624222247344-550fb60583fd?w=800&h=1000&fit=crop&auto=format",
+    image_url: "https://images.unsplash.com/photo-1624222247344-550fb60583fd?w=600&h=800&fit=crop&auto=format",
     category: "Accessories",
     stock_quantity: 45,
     featured: false,
@@ -230,7 +231,7 @@ const sampleProducts = [
     name: "Pearl Earrings",
     description: "Classic pearl drop earrings with gold setting. Timeless elegance for any occasion.",
     price: 159.99,
-    image_url: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=800&h=1000&fit=crop&auto=format",
+    image_url: "https://images.unsplash.com/photo-1624222247344-550fb60583fd?w=600&h=800&fit=crop&auto=format",
     category: "Accessories",
     stock_quantity: 40,
     featured: false,
@@ -291,6 +292,15 @@ async function seedDatabase() {
     console.log(`- Total products: ${products.length}`);
     console.log(`- Featured products: ${products.filter(p => p.featured).length}`);
     console.log(`- Categories: ${[...new Set(products.map(p => p.category))].join(', ')}`);
+
+    // Verify all images are unique
+    const imageUrls = products.map(p => p.image_url);
+    const uniqueUrls = [...new Set(imageUrls)];
+    if (imageUrls.length !== uniqueUrls.length) {
+      console.warn(`\n⚠️ Warning: ${imageUrls.length - uniqueUrls.length} duplicate image URLs found!`);
+    } else {
+      console.log('\n✅ All product images are unique!');
+    }
 
   } catch (error) {
     console.error('❌ Error seeding database:', error);
