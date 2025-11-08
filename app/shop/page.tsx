@@ -279,7 +279,7 @@ export default function ShopPage() {
                       </p>
 
                       <div className="mt-auto flex flex-col gap-3">
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center justify-center gap-3">
                           <button
                             onClick={async () => {
                               if (isInWishlist(product._id)) {
@@ -316,7 +316,7 @@ export default function ShopPage() {
 
                         <button
                           onClick={() => addToCart(product._id)}
-                          className="self-start px-8 py-3 border border-black/20 text-black hover:border-black/40 hover:bg-black hover:text-white transition-all duration-300 text-sm tracking-[0.15em] uppercase"
+                          className="mx-auto px-8 py-3 border border-black/20 text-black hover:border-black/40 hover:bg-black hover:text-white transition-all duration-300 text-sm tracking-[0.15em] uppercase"
                         >
                           Add to Cart
                         </button>
