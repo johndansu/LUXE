@@ -139,7 +139,7 @@ export function FeaturedProducts() {
           {products.slice(0, 3).map((product, index) => (
             <motion.div
               key={product._id}
-              className="group relative"
+              className="group relative flex h-full flex-col"
               initial={{ opacity: 0, y: 50 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -177,7 +177,7 @@ export function FeaturedProducts() {
               </div>
 
               {/* Product Info */}
-              <div className="text-center relative z-20">
+              <div className="relative z-20 flex flex-1 flex-col text-center">
                 <h3 className="text-xl font-light text-black mb-4 tracking-wide group-hover:text-black/70 transition-colors duration-500">
                   {product.name}
                 </h3>
@@ -222,7 +222,7 @@ export function FeaturedProducts() {
                 {/* Add to Cart Button */}
                 <motion.button
                   onClick={() => addToCart(product._id)}
-                  className="group relative inline-block px-8 py-3 border border-black/20 text-black hover:border-black/40 transition-all duration-500 overflow-hidden"
+                  className="group relative inline-block px-8 py-3 border border-black/20 text-black hover:border-black/40 transition-all duration-500 overflow-hidden mt-auto"
                   whileHover={{ scale: 1.02 }}
                   transition={{ duration: 0.3 }}
                 >
