@@ -267,7 +267,7 @@ export default function ShopPage() {
                       <div className="absolute inset-0 bg-black/0 transition-all duration-500 group-hover:bg-black/10" />
                     </a>
 
-                    <div className="flex flex-1 flex-col gap-4 p-6 text-center">
+                    <div className="flex flex-1 flex-col gap-4 p-6">
                       <a
                         href={`/shop/${product._id}`}
                         className="text-xl font-light tracking-wide text-black transition-colors duration-300 hover:text-black/70"
@@ -279,7 +279,7 @@ export default function ShopPage() {
                       </p>
 
                       <div className="mt-auto flex flex-col gap-3">
-                        <div className="flex items-center justify-center gap-3">
+                        <div className="flex items-center gap-3">
                           <button
                             onClick={async () => {
                               if (isInWishlist(product._id)) {
@@ -316,7 +316,7 @@ export default function ShopPage() {
 
                         <button
                           onClick={() => addToCart(product._id)}
-                          className="px-8 py-3 border border-black/20 text-black hover:border-black/40 hover:bg-black hover:text-white transition-all duration-300 text-sm tracking-[0.15em] uppercase"
+                          className="self-start px-8 py-3 border border-black/20 text-black hover:border-black/40 hover:bg-black hover:text-white transition-all duration-300 text-sm tracking-[0.15em] uppercase"
                         >
                           Add to Cart
                         </button>
