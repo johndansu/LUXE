@@ -84,7 +84,7 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
 
       {/* Product Info */}
       <CardContent className="flex flex-1 flex-col p-4">
-        <div className="flex flex-1 flex-col space-y-3">
+        <div className="flex flex-1 flex-col gap-3">
           {/* Category */}
           <Badge
             variant="outline"

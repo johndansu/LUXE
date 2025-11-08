@@ -255,10 +255,8 @@ export default function ShopPage() {
                   </a>
 
                   <div
-                    className={`space-y-2 ${
-                      viewMode === "list"
-                        ? "flex-1"
-                        : "mt-4 flex flex-1 flex-col"
+                    className={`flex flex-1 flex-col gap-2 ${
+                      viewMode === "list" ? "" : "mt-4"
                     }`}
                   >
                     <a
