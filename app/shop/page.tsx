@@ -219,7 +219,7 @@ export default function ShopPage() {
           <motion.div
             className={`grid gap-8 ${
               viewMode === "grid"
-                ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+                ? "grid-cols-1 items-stretch auto-rows-fr md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
                 : "grid-cols-1"
             }`}
             layout
@@ -233,12 +233,18 @@ export default function ShopPage() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className={`group ${viewMode === "list" ? "flex gap-6" : ""}`}
+                  className={`group ${
+                    viewMode === "list"
+                      ? "flex gap-6"
+                      : "flex h-full flex-col"
+                  }`}
                 >
                   <a
                     href={`/shop/${product._id}`}
                     className={`${
-                      viewMode === "list" ? "w-48 flex-shrink-0" : "w-full"
+                      viewMode === "list"
+                        ? "w-48 flex-shrink-0"
+                        : "w-full"
                     } aspect-[3/4] bg-black/5 overflow-hidden block`}
                   >
                     <img
@@ -249,9 +255,11 @@ export default function ShopPage() {
                   </a>
 
                   <div
-                    className={`${
-                      viewMode === "list" ? "flex-1" : "mt-4"
-                    } space-y-2`}
+                    className={`space-y-2 ${
+                      viewMode === "list"
+                        ? "flex-1"
+                        : "mt-4 flex flex-1 flex-col"
+                    }`}
                   >
                     <a
                       href={`/shop/${product._id}`}
@@ -262,7 +270,11 @@ export default function ShopPage() {
                     <p className="text-black/60 text-sm leading-relaxed">
                       {product.description}
                     </p>
-                    <div className="flex items-center justify-between">
+                    <div
+                      className={`flex items-center justify-between pt-2 ${
+                        viewMode === "list" ? "" : "mt-auto"
+                      }`}
+                    >
                       <span className="text-xl font-light text-black">
                         ${product.price.toFixed(2)}
                       </span>
