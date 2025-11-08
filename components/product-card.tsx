@@ -45,7 +45,7 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
   };
 
   return (
-    <Card className="group overflow-hidden bg-white border-slate-200 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 relative">
+    <Card className="group relative flex h-full flex-col overflow-hidden border-slate-200 bg-white shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl">
       {/* Product Image */}
       <div className="relative aspect-square overflow-hidden bg-slate-50">
         <Image
@@ -83,8 +83,8 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
       </div>
 
       {/* Product Info */}
-      <CardContent className="p-4">
-        <div className="space-y-3">
+      <CardContent className="flex flex-1 flex-col p-4">
+        <div className="space-y-3 flex-1">
           {/* Category */}
           <Badge
             variant="outline"
@@ -144,7 +144,7 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
       </CardContent>
 
       {/* Action Buttons */}
-      <CardFooter className="p-4 pt-0">
+      <CardFooter className="mt-auto p-4 pt-0">
         <div className="w-full space-y-2">
           <Button
             onClick={handleAddToCart}
