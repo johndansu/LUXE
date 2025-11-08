@@ -239,7 +239,7 @@ export default function ShopPage() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -20 }}
                     transition={{ duration: 0.5, delay: index * 0.1 }}
-                    className="group relative flex h-full flex-col overflow-hidden border border-black/10 bg-white transition-all duration-500 hover:-translate-y-1 hover:shadow-xl"
+                    className="group relative flex h-full flex-col overflow-hidden bg-white transition-all duration-500 hover:-translate-y-1 hover:shadow-xl"
                   >
                     <a
                       href={`/shop/${product._id}`}
@@ -331,7 +331,7 @@ export default function ShopPage() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -20 }}
                     transition={{ duration: 0.5, delay: index * 0.1 }}
-                    className="group flex flex-col gap-6 border border-black/10 bg-white p-6 transition-shadow duration-300 hover:shadow-lg md:flex-row md:items-center"
+                    className="group flex flex-col gap-6 bg-white p-6 transition-shadow duration-300 hover:shadow-lg md:flex-row md:items-center"
                   >
                     <a
                       href={`/shop/${product._id}`}
