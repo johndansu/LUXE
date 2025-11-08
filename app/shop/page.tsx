@@ -2,9 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown, Grid, List, Filter } from "lucide-react";
+import { ChevronDown, Grid, List, Filter, Heart } from "lucide-react";
 import { Footer } from "@/components/footer";
 import { useCart } from "@/lib/cart-context";
+import { useWishlist } from "@/lib/wishlist-context";
 
 interface Product {
   _id: string;
@@ -28,6 +29,7 @@ export default function ShopPage() {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [showFilters, setShowFilters] = useState(false);
   const { addToCart } = useCart();
+  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
 
   const categories = [
     "All",
@@ -269,19 +271,46 @@ export default function ShopPage() {
                       {product.description}
                     </p>
                     <div
-                      className={`flex items-center justify-between pt-2 ${
+                      className={`flex items-center justify-between gap-3 pt-2 ${
                         viewMode === "list" ? "" : "mt-auto"
                       }`}
                     >
                       <span className="text-xl font-light text-black">
                         ${product.price.toFixed(2)}
                       </span>
-                      <button
-                        onClick={() => addToCart(product._id)}
-                        className="px-6 py-2 border border-black/20 text-black hover:border-black/40 hover:bg-black hover:text-white transition-all duration-300 text-sm tracking-[0.1em] uppercase"
-                      >
-                        Add to Cart
-                      </button>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={async () => {
+                            if (isInWishlist(product._id)) {
+                              await removeFromWishlist(product._id);
+                            } else {
+                              await addToWishlist(product._id);
+                            }
+                          }}
+                          aria-label={
+                            isInWishlist(product._id)
+                              ? "Remove from wishlist"
+                              : "Add to wishlist"
+                          }
+                          className={`flex h-10 w-10 items-center justify-center border border-black/20 transition-all duration-300 hover:border-black/40 ${
+                            isInWishlist(product._id)
+                              ? "text-red-500"
+                              : "text-black"
+                          }`}
+                        >
+                          <Heart
+                            className={`h-4 w-4 ${
+                              isInWishlist(product._id) ? "fill-current" : ""
+                            }`}
+                          />
+                        </button>
+                        <button
+                          onClick={() => addToCart(product._id)}
+                          className="px-6 py-2 border border-black/20 text-black hover:border-black/40 hover:bg-black hover:text-white transition-all duration-300 text-sm tracking-[0.1em] uppercase"
+                        >
+                          Add to Cart
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </motion.div>
