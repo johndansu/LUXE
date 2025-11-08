@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, Grid, List, Filter, Heart } from "lucide-react";
 import { Footer } from "@/components/footer";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { useCart } from "@/lib/cart-context";
 import { useWishlist } from "@/lib/wishlist-context";
 
@@ -30,6 +32,7 @@ export default function ShopPage() {
   const [showFilters, setShowFilters] = useState(false);
   const { addToCart } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
   const categories = [
     "All",
@@ -227,94 +230,190 @@ export default function ShopPage() {
             layout
           >
             <AnimatePresence mode="wait">
-              {filteredProducts.map((product, index) => (
-                <motion.div
-                  key={product._id}
-                  layout
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className={`group ${
-                    viewMode === "list"
-                      ? "flex gap-6"
-                      : "flex h-full flex-col"
-                  }`}
-                >
-                  <a
-                    href={`/shop/${product._id}`}
-                    className={`${
-                      viewMode === "list"
-                        ? "w-48 flex-shrink-0"
-                        : "w-full"
-                    } aspect-[3/4] bg-black/5 overflow-hidden block`}
-                  >
-                    <img
-                      src={product.image_url}
-                      alt={product.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                    />
-                  </a>
-
-                  <div
-                    className={`flex flex-1 flex-col gap-2 ${
-                      viewMode === "list" ? "" : "mt-4"
-                    }`}
+              {filteredProducts.map((product, index) =>
+                viewMode === "grid" ? (
+                  <motion.div
+                    key={`grid-${product._id}`}
+                    layout
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    transition={{ duration: 0.5, delay: index * 0.1 }}
+                    className="group relative flex h-full flex-col overflow-hidden border border-black/10 bg-white transition-all duration-500 hover:-translate-y-1 hover:shadow-xl"
                   >
                     <a
                       href={`/shop/${product._id}`}
-                      className="text-lg font-light tracking-wide text-black group-hover:text-black/70 transition-colors duration-300 hover:underline"
+                      className="relative block aspect-[3/4] overflow-hidden bg-black/5"
                     >
-                      {product.name}
+                      <img
+                        src={product.image_url}
+                        alt={product.name}
+                        className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                      />
+                      <div className="absolute top-4 left-4 z-20">
+                        <div className="bg-white/90 backdrop-blur-sm px-3 py-1 border border-black/10">
+                          <span className="text-xs font-light tracking-[0.15em] uppercase text-black">
+                            {product.featured ? "Featured" : product.category}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="absolute bottom-4 right-4 z-20">
+                        <div className="bg-white/90 backdrop-blur-sm px-4 py-2 border border-black/10">
+                          <span className="text-lg font-light text-black">
+                            ${product.price.toFixed(2)}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="absolute inset-0 bg-black/0 transition-all duration-500 group-hover:bg-black/10" />
                     </a>
-                    <p className="text-black/60 text-sm leading-relaxed">
-                      {product.description}
-                    </p>
-                    <div
-                      className={`flex items-center justify-between gap-3 pt-2 ${
-                        viewMode === "list" ? "" : "mt-auto"
-                      }`}
-                    >
-                      <span className="text-xl font-light text-black">
-                        ${product.price.toFixed(2)}
-                      </span>
-                      <div className="flex items-center gap-2">
-                        <button
-                          onClick={async () => {
-                            if (isInWishlist(product._id)) {
-                              await removeFromWishlist(product._id);
-                            } else {
-                              await addToWishlist(product._id);
+
+                    <div className="flex flex-1 flex-col gap-4 p-6 text-center">
+                      <a
+                        href={`/shop/${product._id}`}
+                        className="text-xl font-light tracking-wide text-black transition-colors duration-300 hover:text-black/70"
+                      >
+                        {product.name}
+                      </a>
+                      <p className="text-sm leading-relaxed text-black/60">
+                        {product.description}
+                      </p>
+
+                      <div className="mt-auto flex flex-col gap-3">
+                        <div className="flex items-center justify-center gap-3">
+                          <button
+                            onClick={async () => {
+                              if (isInWishlist(product._id)) {
+                                await removeFromWishlist(product._id);
+                              } else {
+                                await addToWishlist(product._id);
+                              }
+                            }}
+                            aria-label={
+                              isInWishlist(product._id)
+                                ? "Remove from wishlist"
+                                : "Add to wishlist"
                             }
-                          }}
-                          aria-label={
-                            isInWishlist(product._id)
-                              ? "Remove from wishlist"
-                              : "Add to wishlist"
-                          }
-                          className={`flex h-10 w-10 items-center justify-center border border-black/20 transition-all duration-300 hover:border-black/40 ${
-                            isInWishlist(product._id)
-                              ? "text-red-500"
-                              : "text-black"
-                          }`}
-                        >
-                          <Heart
-                            className={`h-4 w-4 ${
-                              isInWishlist(product._id) ? "fill-current" : ""
+                            className={`flex h-10 w-10 items-center justify-center border border-black/20 transition-all duration-300 hover:border-black/40 ${
+                              isInWishlist(product._id)
+                                ? "text-red-500"
+                                : "text-black"
                             }`}
-                          />
-                        </button>
+                          >
+                            <Heart
+                              className={`h-4 w-4 ${
+                                isInWishlist(product._id) ? "fill-current" : ""
+                              }`}
+                            />
+                          </button>
+                          <button
+                            onClick={() => setSelectedProduct(product)}
+                            className="flex h-10 w-10 items-center justify-center border border-black/20 text-black transition-all duration-300 hover:border-black/40"
+                            aria-label="Quick view"
+                          >
+                            <span className="text-lg">👁</span>
+                          </button>
+                        </div>
+
                         <button
                           onClick={() => addToCart(product._id)}
-                          className="px-6 py-2 border border-black/20 text-black hover:border-black/40 hover:bg-black hover:text-white transition-all duration-300 text-sm tracking-[0.1em] uppercase"
+                          className="px-8 py-3 border border-black/20 text-black hover:border-black/40 hover:bg-black hover:text-white transition-all duration-300 text-sm tracking-[0.15em] uppercase"
                         >
                           Add to Cart
                         </button>
                       </div>
                     </div>
-                  </div>
-                </motion.div>
-              ))}
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key={`list-${product._id}`}
+                    layout
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    transition={{ duration: 0.5, delay: index * 0.1 }}
+                    className="group flex flex-col gap-6 border border-black/10 bg-white p-6 transition-shadow duration-300 hover:shadow-lg md:flex-row md:items-center"
+                  >
+                    <a
+                      href={`/shop/${product._id}`}
+                      className="relative block aspect-[3/4] w-full overflow-hidden bg-black/5 md:w-48 md:flex-shrink-0"
+                    >
+                      <img
+                        src={product.image_url}
+                        alt={product.name}
+                        className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                      />
+                    </a>
+
+                    <div className="flex flex-1 flex-col gap-4">
+                      <div className="flex flex-wrap items-center gap-3">
+                        <Badge variant="outline" className="border-black/10 bg-white text-xs uppercase tracking-[0.15em] text-black/60">
+                          {product.category}
+                        </Badge>
+                        {product.featured && (
+                          <Badge variant="secondary" className="bg-black text-white text-xs uppercase tracking-[0.15em]">
+                            Featured
+                          </Badge>
+                        )}
+                      </div>
+
+                      <a
+                        href={`/shop/${product._id}`}
+                        className="text-2xl font-light tracking-wide text-black transition-colors duration-300 hover:text-black/70"
+                      >
+                        {product.name}
+                      </a>
+                      <p className="text-sm leading-relaxed text-black/60">
+                        {product.description}
+                      </p>
+
+                      <div className="mt-auto flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                        <span className="text-2xl font-light text-black">
+                          ${product.price.toFixed(2)}
+                        </span>
+                        <div className="flex flex-wrap items-center gap-2">
+                          <button
+                            onClick={async () => {
+                              if (isInWishlist(product._id)) {
+                                await removeFromWishlist(product._id);
+                              } else {
+                                await addToWishlist(product._id);
+                              }
+                            }}
+                            aria-label={
+                              isInWishlist(product._id)
+                                ? "Remove from wishlist"
+                                : "Add to wishlist"
+                            }
+                            className={`flex h-10 w-10 items-center justify-center border border-black/20 transition-all duration-300 hover:border-black/40 ${
+                              isInWishlist(product._id)
+                                ? "text-red-500"
+                                : "text-black"
+                            }`}
+                          >
+                            <Heart
+                              className={`h-4 w-4 ${
+                                isInWishlist(product._id) ? "fill-current" : ""
+                              }`}
+                            />
+                          </button>
+                          <button
+                            onClick={() => setSelectedProduct(product)}
+                            className="px-4 py-2 border border-black/20 text-black transition-all duration-300 hover:border-black/40 hover:bg-black hover:text-white text-xs tracking-[0.15em] uppercase"
+                          >
+                            Quick View
+                          </button>
+                          <button
+                            onClick={() => addToCart(product._id)}
+                            className="px-6 py-2 border border-black/20 text-black hover:border-black/40 hover:bg-black hover:text-white transition-all duration-300 text-sm tracking-[0.15em] uppercase"
+                          >
+                            Add to Cart
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                )
+              )}
             </AnimatePresence>
           </motion.div>
 
@@ -330,6 +429,122 @@ export default function ShopPage() {
               </p>
             </motion.div>
           )}
+
+          <AnimatePresence>
+            {selectedProduct && (
+              <motion.div
+                className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setSelectedProduct(null)}
+              >
+                <motion.div
+                  className="w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-white"
+                  initial={{ scale: 0.9, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0.9, opacity: 0 }}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <div className="flex items-center justify-between border-b border-black/10 p-6">
+                    <h2 className="text-xl font-light text-black">Quick View</h2>
+                    <button
+                      onClick={() => setSelectedProduct(null)}
+                      className="p-2 transition-colors duration-300 hover:bg-black/5"
+                      aria-label="Close quick view"
+                    >
+                      <ChevronDown className="h-5 w-5 rotate-180" />
+                    </button>
+                  </div>
+
+                  {selectedProduct && (
+                    <div className="grid grid-cols-1 gap-6 p-6 md:grid-cols-2">
+                      <div className="aspect-square overflow-hidden bg-black/5">
+                        <img
+                          src={selectedProduct.image_url}
+                          alt={selectedProduct.name}
+                          className="h-full w-full object-cover"
+                        />
+                      </div>
+
+                      <div className="space-y-4">
+                        <div>
+                          <Badge
+                            variant="outline"
+                            className="mb-2 border-black/10 bg-white text-xs uppercase tracking-[0.15em] text-black/60"
+                          >
+                            {selectedProduct.category}
+                          </Badge>
+                          <h3 className="text-2xl font-light text-black">
+                            {selectedProduct.name}
+                          </h3>
+                          <p className="text-sm leading-relaxed text-black/60">
+                            {selectedProduct.description}
+                          </p>
+                        </div>
+
+                        <div className="space-y-2">
+                          <p className="text-3xl font-light text-black">
+                            ${selectedProduct.price.toFixed(2)}
+                          </p>
+                          <p
+                            className={`text-sm font-medium ${
+                              selectedProduct.stock_quantity > 20
+                                ? "text-green-600"
+                                : selectedProduct.stock_quantity > 10
+                                ? "text-yellow-600"
+                                : "text-red-600"
+                            }`}
+                          >
+                            {selectedProduct.stock_quantity > 20
+                              ? "In Stock"
+                              : selectedProduct.stock_quantity > 10
+                              ? "Limited Stock"
+                              : "Low Stock"}
+                          </p>
+                        </div>
+
+                        <div className="space-y-3 pt-4">
+                          <Button
+                            onClick={async () => {
+                              await addToCart(selectedProduct._id);
+                              setSelectedProduct(null);
+                            }}
+                            className="h-12 w-full bg-black text-white hover:bg-black/90"
+                            disabled={selectedProduct.stock_quantity === 0}
+                          >
+                            Add to Cart
+                          </Button>
+                          <Button
+                            onClick={async () => {
+                              if (isInWishlist(selectedProduct._id)) {
+                                await removeFromWishlist(selectedProduct._id);
+                              } else {
+                                await addToWishlist(selectedProduct._id);
+                              }
+                            }}
+                            variant="outline"
+                            className="h-12 w-full border-black/20 text-black hover:border-black/40"
+                          >
+                            {isInWishlist(selectedProduct._id)
+                              ? "Remove from Wishlist"
+                              : "Add to Wishlist"}
+                          </Button>
+                          <Button
+                            onClick={() => setSelectedProduct(null)}
+                            variant="ghost"
+                            className="h-12 w-full text-black/60 hover:text-black"
+                          >
+                            View Full Details
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </section>
 

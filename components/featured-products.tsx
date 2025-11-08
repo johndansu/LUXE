@@ -151,6 +151,7 @@ export function FeaturedProducts() {
                   src={product.image_url}
                   alt={product.name}
                   fill
+                  sizes="(min-width: 1280px) 22vw, (min-width: 1024px) 28vw, (min-width: 768px) 40vw, 90vw"
                   className="object-cover transition-transform duration-1000 group-hover:scale-105"
                 />
 

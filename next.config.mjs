@@ -9,7 +9,12 @@ const nextConfig = {
   // Vercel has built-in image optimization, so we enable it
   // Images in /public folder and external images will be automatically optimized
   images: {
-    // Vercel automatically optimizes images - no need for unoptimized: true
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com",
+      },
+    ],
   },
 }
 
