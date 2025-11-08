@@ -84,7 +84,7 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
 
       {/* Product Info */}
       <CardContent className="flex flex-1 flex-col p-4">
-        <div className="space-y-3 flex-1">
+        <div className="flex flex-1 flex-col space-y-3">
           {/* Category */}
           <Badge
             variant="outline"
@@ -114,7 +114,7 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
           </div>
 
           {/* Price */}
-          <div className="flex items-center justify-between">
+          <div className="mt-auto flex items-center justify-between pt-2">
             <div className="space-y-1">
               <p className="text-lg font-bold text-slate-900">
                 ${product.price.toFixed(2)}
