@@ -63,8 +63,8 @@ export function MinimalNav() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <Link href="/" className="flex items-center space-x-3">
-              <div className="relative h-10 w-10 overflow-hidden rounded-full">
+            <Link href="/" className="flex items-center space-x-4">
+              <div className="relative h-10 w-10 overflow-hidden">
                 <Image
                   src="/icon.svg"
                   alt="LUXE"
