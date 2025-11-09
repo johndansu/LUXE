@@ -13,6 +13,7 @@ import {
   Train,
   Car,
 } from "lucide-react";
+import Image from "next/image";
 
 export function ContactSection() {
   const [formData, setFormData] = useState({

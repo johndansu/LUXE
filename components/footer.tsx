@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Image from "next/image";
 import { Instagram, Facebook, Twitter } from "lucide-react";
 
 export function Footer() {
@@ -23,7 +24,15 @@ export function Footer() {
             transition={{ duration: 0.8 }}
           >
             <div className="flex items-center space-x-4 mb-6">
-              <div className="w-12 h-12 bg-black"></div>
+              <div className="relative h-12 w-12 overflow-hidden rounded-full border border-black/10">
+                <Image
+                  src="/icon.svg"
+                  alt="LUXE"
+                  fill
+                  sizes="48px"
+                  className="object-cover"
+                />
+              </div>
               <span className="text-black font-light text-2xl tracking-[0.2em] uppercase">
                 LUXE
               </span>

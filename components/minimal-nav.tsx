@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Image from "next/image";
 import { useState, useEffect } from "react";
 import { ShoppingBag, User, LogOut, Heart } from "lucide-react";
 import Link from "next/link";
@@ -62,8 +63,17 @@ export function MinimalNav() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <Link href="/" className="flex items-center space-x-4">
-              <div className="w-10 h-10 bg-black"></div>
+            <Link href="/" className="flex items-center space-x-3">
+              <div className="relative h-10 w-10 overflow-hidden rounded-full border border-black/10">
+                <Image
+                  src="/icon.svg"
+                  alt="LUXE"
+                  fill
+                  sizes="40px"
+                  className="object-cover"
+                  priority
+                />
+              </div>
               <span className="text-black font-light text-xl tracking-[0.2em] uppercase">
                 LUXE
               </span>
