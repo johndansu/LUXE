@@ -14,6 +14,10 @@ export const metadata: Metadata = {
   description:
     "Discover the art of sophisticated dressing. Each piece tells a story of craftsmanship, elegance, and timeless beauty that transcends seasons.",
   generator: "LUXE E-commerce Platform",
+  icons: {
+    icon: "/icon.svg",
+    shortcut: "/icon.svg",
+  },
 };
 
 export default function RootLayout({
