@@ -24,7 +24,7 @@ export function Footer() {
             transition={{ duration: 0.8 }}
           >
             <div className="flex items-center space-x-4 mb-6">
-              <div className="relative h-12 w-12 overflow-hidden rounded-full border border-black/10">
+              <div className="relative h-12 w-12 overflow-hidden rounded-full">
                 <Image
                   src="/icon.svg"
                   alt="LUXE"

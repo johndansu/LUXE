@@ -71,7 +71,7 @@ export function Header() {
             transition={{ duration: 0.6 }}
           >
             <Link href="/" className="flex items-center space-x-3">
-              <div className="relative h-10 w-10 overflow-hidden rounded-full border border-black/10">
+              <div className="relative h-10 w-10 overflow-hidden rounded-full">
                 <Image
                   src="/icon.svg"
                   alt="LUXE"
